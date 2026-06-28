@@ -134,7 +134,7 @@ class CatalogoRepuestos(models.Model):
         ModeloTractor, on_delete=models.CASCADE, related_name="catalogos"
     )
     tipo_mantencion = models.CharField(max_length=30, choices=TIPOS_MANTENCION)
-    repuestos = models.ManyToManyField(Repuesto, through=ItemCatalogo, related_name="catalogos")
+    # repuestos se maneja via ItemCatalogo (through model)
 
     class Meta:
         verbose_name = "Catálogo de Repuestos"
