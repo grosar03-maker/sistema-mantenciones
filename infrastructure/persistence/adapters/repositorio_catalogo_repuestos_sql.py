@@ -6,6 +6,7 @@ from domain.entities.repuesto import Repuesto as RepuestoDomain
 from domain.value_objects.tipo_mantencion import TipoMantencion
 from application.ports.repositorio_catalogo_repuestos import RepositorioCatalogoRepuestos
 from infrastructure.models import CatalogoRepuestos as CatalogoORM
+from infrastructure.models import ItemCatalogo
 from infrastructure.models import Repuesto as RepuestoORM
 
 
@@ -20,7 +21,10 @@ class RepositorioCatalogoRepuestosSQL(RepositorioCatalogoRepuestos):
             },
         )
         if catalogo.repuestos:
-            orm.repuestos.set([r.id for r in catalogo.repuestos])
+            existing = {it.repuesto_id for it in ItemCatalogo.objects.filter(catalogo=orm)}
+            for r in catalogo.repuestos:
+                if r.id not in existing:
+                    ItemCatalogo.objects.create(catalogo=orm, repuesto_id=r.id, cantidad=1)
 
     def obtener_por_modelo_y_mantencion(
         self, modelo: ModeloDomain, tipo_mantencion: TipoMantencion
