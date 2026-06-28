@@ -46,7 +46,6 @@ class RepuestoAdmin(admin.ModelAdmin):
 class CatalogoRepuestosAdmin(admin.ModelAdmin):
     list_display = ("modelo", "tipo_mantencion")
     list_filter = ("tipo_mantencion", "modelo")
-    filter_horizontal = ("repuestos",)
 
 
 @admin.register(OrdenMantencion)
