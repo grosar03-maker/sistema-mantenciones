@@ -1,0 +1,42 @@
+Modelo_Tractor,Potencia_HP,Tipo_Filtro,Codigo_CNH,Mant_300h,Mant_600h,Mant_900h,Mant_1200h
+Farmall JX 110 DT,108,Aceite Motor (Akcela No. 1 15W-40),76063945,Cambiar,Cambiar,Cambiar,Cambiar
+Farmall JX 110 DT,108,Aceite Motor,84221215,Cambiar,Cambiar,Cambiar,Cambiar
+Farmall JX 110 DT,108,Aceite Transmisión e Hidráulico (Akcela Nexplore),76054707,Inspeccionar,Inspeccionar,Inspeccionar,Cambiar
+Farmall JX 110 DT,108,Aire Primario (Externo),87037985,Inspeccionar/Limpiar,Cambiar,Inspeccionar/Limpiar,Cambiar
+Farmall JX 110 DT,108,Aire Secundario (Interno),87037984,No Tocar,No Tocar,No Tocar,Cambiar
+Farmall JX 110 DT,108,Combustible Principal,84214564,Inspeccionar/Drenar,Cambiar,Inspeccionar/Drenar,Cambiar
+Farmall JX 110 DT,108,Combustible Separador,84217953,Inspeccionar/Drenar,Cambiar,Inspeccionar/Drenar,Cambiar
+Farmall JX 110 DT,108,Hidráulico Principal,84257511,Inspeccionar,Inspeccionar,Inspeccionar,Cambiar
+Farmall JXM75,75,Aceite Motor (Akcela No. 1 15W-40),76063945,Cambiar,Cambiar,Cambiar,Cambiar
+Farmall JXM75,75,Aceite Motor,87679598,Cambiar,Cambiar,Cambiar,Cambiar
+Farmall JXM75,75,Aceite Transmisión e Hidráulico (Akcela Nexplore),76054707,Inspeccionar,Inspeccionar,Inspeccionar,Cambiar
+Farmall JXM75,75,Aire Primario (Externo),84170876,Inspeccionar/Limpiar,Cambiar,Inspeccionar/Limpiar,Cambiar
+Farmall JXM75,75,Aire Secundario (Interno),86982523,No Tocar,No Tocar,No Tocar,Cambiar
+Farmall JXM75,75,Combustible Principal,84214564,Inspeccionar/Drenar,Cambiar,Inspeccionar/Drenar,Cambiar
+Farmall JXM75,75,Combustible Separador,87329736,Inspeccionar/Drenar,Cambiar,Inspeccionar/Drenar,Cambiar
+Farmall JXM75,75,Hidráulico / Transmisión,87391716,Inspeccionar,Inspeccionar,Inspeccionar,Cambiar
+Maxxum 110/125 DT,125,Aceite Motor (Akcela Unitek 10W-40 Sintético),76140660,Cambiar,Cambiar,Cambiar,Cambiar
+Maxxum 110/125 DT,125,Aceite Motor,84228488,Cambiar,Cambiar,Cambiar,Cambiar
+Maxxum 110/125 DT,125,Aceite Transmisión e Hidráulico (Akcela Nexplore UTTO),76054707,Inspeccionar,Inspeccionar,Inspeccionar,Cambiar
+Maxxum 110/125 DT,125,Aire Primario (Externo),82028977,Inspeccionar/Limpiar,Cambiar,Inspeccionar/Limpiar,Cambiar
+Maxxum 110/125 DT,125,Aire Secundario (Interno),87683000,No Tocar,No Tocar,No Tocar,Cambiar
+Maxxum 110/125 DT,125,Combustible Cartucho,47509565,Inspeccionar/Drenar,Cambiar,Inspeccionar/Drenar,Cambiar
+Maxxum 110/125 DT,125,Combustible Separador,84526251,Inspeccionar/Drenar,Cambiar,Inspeccionar/Drenar,Cambiar
+Maxxum 110/125 DT,125,Hidráulico Transmisión,48142232,Inspeccionar,Inspeccionar,Inspeccionar,Cambiar
+Optum 270/300 CVX,300,Aceite Hidráulico Independiente (Akcela Multi-Action),76092780,Inspeccionar,Inspeccionar,Inspeccionar,Cambiar
+Optum 270/300 CVX,300,Aceite Motor (Akcela Unitek Plus 10W-40 CK-4),76161136,Cambiar,Cambiar,Cambiar,Cambiar
+Optum 270/300 CVX,300,Aceite Motor,5801439820,Cambiar,Cambiar,Cambiar,Cambiar
+Optum 270/300 CVX,300,Aceite Transmisión CVX (Akcela Hy-Tran Ultra Premium),76054366,Inspeccionar,Inspeccionar,Inspeccionar,Cambiar
+Optum 270/300 CVX,300,Aire Primario,47981603,Inspeccionar/Limpiar,Cambiar,Inspeccionar/Limpiar,Cambiar
+Optum 270/300 CVX,300,Aire Secundario,47981616,No Tocar,No Tocar,No Tocar,Cambiar
+Optum 270/300 CVX,300,Combustible Principal,84565867,Inspeccionar/Drenar,Cambiar,Inspeccionar/Drenar,Cambiar
+Optum 270/300 CVX,300,Combustible Separador,84557596,Inspeccionar/Drenar,Cambiar,Inspeccionar/Drenar,Cambiar
+Optum 270/300 CVX,300,Hidráulico Transmisión,84487937,Inspeccionar,Inspeccionar,Inspeccionar,Cambiar
+Puma 155 DT,156,Aceite Motor (Akcela Unitek 10W-40 Premium),76140660,Cambiar,Cambiar,Cambiar,Cambiar
+Puma 155 DT,156,Aceite Motor,84228488,Cambiar,Cambiar,Cambiar,Cambiar
+Puma 155 DT,156,Aceite Transmisión e Hidráulico (Akcela Nexplore),76054707,Inspeccionar,Inspeccionar,Inspeccionar,Cambiar
+Puma 155 DT,156,Aire Primario (Externo),87517153,Inspeccionar/Limpiar,Cambiar,Inspeccionar/Limpiar,Cambiar
+Puma 155 DT,156,Aire Secundario (Interno),87517154,No Tocar,No Tocar,No Tocar,Cambiar
+Puma 155 DT,156,Combustible Principal,84412164,Inspeccionar/Drenar,Cambiar,Inspeccionar/Drenar,Cambiar
+Puma 155 DT,156,Combustible Separador,336430A1,Inspeccionar/Drenar,Cambiar,Inspeccionar/Drenar,Cambiar
+Puma 155 DT,156,Hidráulico Presión/Carga,48142232,Inspeccionar,Inspeccionar,Inspeccionar,Cambiar

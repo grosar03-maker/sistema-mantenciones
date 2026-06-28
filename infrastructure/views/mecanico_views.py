@@ -1,0 +1,332 @@
+import json
+from datetime import date, datetime
+
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
+from django.shortcuts import render, get_object_or_404, redirect
+from django.views.decorators.http import require_http_methods
+
+from application.use_cases.asignar_mecanico import AsignarMecanico
+from application.use_cases.cancelar_mantencion import CancelarMantencion
+from application.use_cases.iniciar_mantencion import IniciarMantencion
+from application.use_cases.completar_mantencion import CompletarMantencion
+from domain.value_objects.estado_orden import EstadoOrden
+from infrastructure.mail_service.adapters.servicio_notificacion_email import ServicioNotificacionEmail
+from infrastructure.models import Cliente, Mecanico, OrdenMantencion
+from infrastructure.persistence.adapters.repositorio_mecanico_sql import RepositorioMecanicoSQL
+from infrastructure.persistence.adapters.repositorio_orden_mantencion_sql import RepositorioOrdenMantencionSQL
+
+
+def _mecanico_required(view):
+    def wrapper(request, *args, **kwargs):
+        if not request.user.groups.filter(name="mecanicos").exists():
+            raise PermissionDenied
+        return view(request, *args, **kwargs)
+    return wrapper
+
+
+@login_required
+@_mecanico_required
+def dashboard(request):
+    ordenes = OrdenMantencion.objects.select_related(
+        "cliente", "tractor__modelo", "mecanico_asignado"
+    ).prefetch_related("repuestos").all()
+
+    mecanico = Mecanico.objects.filter(email=request.user.email).first()
+
+    pendientes = [o for o in ordenes if o.estado == "pendiente"]
+    asignadas = [o for o in ordenes if o.estado == "asignada"]
+    en_progreso = [o for o in ordenes if o.estado == "en_progreso"]
+
+    dias_con_ordenes = (
+        OrdenMantencion.objects.filter(
+            fecha_programada__isnull=False,
+        )
+        .exclude(estado__in=("cancelada", "completada"))
+        .values_list("fecha_programada", flat=True)
+        .distinct()
+    )
+    dias_ocupados_json = json.dumps([d.isoformat() for d in dias_con_ordenes])
+
+    ordenes_activas = [o for o in ordenes if o.estado in ("pendiente", "asignada", "en_progreso")]
+
+    return render(request, "mecanico/dashboard.html", {
+        "ordenes_pendientes": pendientes,
+        "ordenes_asignadas": asignadas,
+        "ordenes_en_progreso": en_progreso,
+        "total_ordenes": len(ordenes_activas),
+        "mecanico": mecanico,
+        "dias_ocupados_json": dias_ocupados_json,
+        "hoy_iso": date.today().isoformat(),
+    })
+
+
+@login_required
+@_mecanico_required
+def detalle_orden(request, orden_id):
+    orden = get_object_or_404(
+        OrdenMantencion.objects.select_related(
+            "cliente", "tractor__modelo", "tractor__propietario", "mecanico_asignado"
+        ).prefetch_related("repuestos", "imagenes", "notas_internas__mecanico"),
+        id=orden_id,
+    )
+
+    repuestos_agrupados = {
+        "Filtros": [],
+        "Lubricantes": [],
+        "Otros": [],
+    }
+    for r in orden.repuestos.all():
+        if "filtro" in r.tipo:
+            repuestos_agrupados["Filtros"].append(r)
+        elif "lubricante" in r.tipo:
+            repuestos_agrupados["Lubricantes"].append(r)
+        else:
+            repuestos_agrupados["Otros"].append(r)
+
+    mecanico_actual = Mecanico.objects.filter(email=request.user.email).first()
+    mecanicos = Mecanico.objects.all()
+    imagenes = orden.imagenes.all()
+    notas_internas = orden.notas_internas.all().order_by("-created_at")
+
+    return render(request, "mecanico/detalle_orden.html", {
+        "orden": orden,
+        "repuestos_agrupados": repuestos_agrupados,
+        "mecanicos": mecanicos,
+        "mecanico": mecanico_actual,
+        "es_mi_orden": orden.mecanico_asignado == mecanico_actual if orden.mecanico_asignado else False,
+        "imagenes": imagenes,
+        "notas_internas": notas_internas,
+    })
+
+
+@login_required
+@_mecanico_required
+def lista_ordenes(request):
+    qs = OrdenMantencion.objects.select_related(
+        "cliente", "tractor__modelo", "mecanico_asignado"
+    ).prefetch_related("repuestos").all()
+
+    numero_serie = request.GET.get("numero_serie", "").strip()
+    cliente_nombre = request.GET.get("cliente", "").strip()
+    fecha_desde = request.GET.get("fecha_desde", "").strip()
+    fecha_hasta = request.GET.get("fecha_hasta", "").strip()
+    estado = request.GET.get("estado", "").strip()
+
+    if numero_serie:
+        qs = qs.filter(tractor__numero_serie__icontains=numero_serie)
+    if cliente_nombre:
+        qs = qs.filter(cliente__nombre__icontains=cliente_nombre)
+    if fecha_desde:
+        qs = qs.filter(fecha_programada__gte=fecha_desde)
+    if fecha_hasta:
+        qs = qs.filter(fecha_programada__lte=fecha_hasta)
+    if estado:
+        qs = qs.filter(estado=estado)
+
+    ordenes = qs
+
+    mecanico = Mecanico.objects.filter(email=request.user.email).first()
+
+    estados_opciones = [
+        ("pendiente", "Pendiente"),
+        ("asignada", "Asignada"),
+        ("en_progreso", "En Progreso"),
+        ("completada", "Completada"),
+        ("cancelada", "Cancelada"),
+    ]
+
+    return render(request, "mecanico/lista_ordenes.html", {
+        "ordenes": ordenes,
+        "mecanico": mecanico,
+        "filtros": {
+            "numero_serie": numero_serie,
+            "cliente": cliente_nombre,
+            "fecha_desde": fecha_desde,
+            "fecha_hasta": fecha_hasta,
+            "estado": estado,
+        },
+        "estados": estados_opciones,
+    })
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def asignar_orden(request, orden_id):
+    mecanico_id = request.POST.get("mecanico_id")
+    if not mecanico_id:
+        messages.error(request, "Debe seleccionar un mecánico")
+        return redirect("detalle_orden", orden_id=orden_id)
+
+    repo_mecanico = RepositorioMecanicoSQL()
+    mecanico = repo_mecanico.obtener_por_id(mecanico_id)
+    if not mecanico:
+        messages.error(request, "Mecánico no encontrado")
+        return redirect("detalle_orden", orden_id=orden_id)
+
+    caso_uso = AsignarMecanico(
+        repo_orden=RepositorioOrdenMantencionSQL(),
+        notificador=ServicioNotificacionEmail(),
+    )
+
+    try:
+        caso_uso.ejecutar(orden_id, mecanico)
+        messages.success(request, f"Orden asignada a {mecanico.nombre}")
+    except ValueError as e:
+        messages.error(request, str(e))
+
+    return redirect("detalle_orden", orden_id=orden_id)
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def iniciar_orden(request, orden_id):
+    caso_uso = IniciarMantencion(
+        repo_orden=RepositorioOrdenMantencionSQL(),
+    )
+
+    try:
+        caso_uso.ejecutar(orden_id)
+        messages.success(request, "Mantención iniciada")
+    except ValueError as e:
+        messages.error(request, str(e))
+
+    return redirect("detalle_orden", orden_id=orden_id)
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def completar_orden(request, orden_id):
+    caso_uso = CompletarMantencion(
+        repo_orden=RepositorioOrdenMantencionSQL(),
+    )
+
+    try:
+        caso_uso.ejecutar(orden_id)
+        messages.success(request, "Mantención completada")
+    except ValueError as e:
+        messages.error(request, str(e))
+
+    return redirect("detalle_orden", orden_id=orden_id)
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def cancelar_orden(request, orden_id):
+    caso_uso = CancelarMantencion(
+        repo_orden=RepositorioOrdenMantencionSQL(),
+    )
+
+    try:
+        caso_uso.ejecutar(orden_id)
+        messages.success(request, "Mantención cancelada")
+    except ValueError as e:
+        messages.error(request, str(e))
+
+    return redirect("dashboard_mecanico")
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def eliminar_orden(request, orden_id):
+    orden = get_object_or_404(OrdenMantencion, id=orden_id)
+    orden.delete()
+    messages.success(request, "Orden eliminada correctamente")
+    return redirect("dashboard_mecanico")
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def reprogramar_orden(request, orden_id):
+    orden = get_object_or_404(OrdenMantencion, id=orden_id)
+    if orden.estado not in ("pendiente", "asignada"):
+        messages.error(request, "Solo se puede reprogramar órdenes pendientes o asignadas")
+        return redirect("detalle_orden", orden_id=orden_id)
+    fecha_str = request.POST.get("fecha_programada", "").strip()
+    if not fecha_str:
+        messages.error(request, "Debe seleccionar una fecha")
+        return redirect("detalle_orden", orden_id=orden_id)
+    try:
+        nueva_fecha = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+    except ValueError:
+        messages.error(request, "Formato de fecha inválido")
+        return redirect("detalle_orden", orden_id=orden_id)
+    fecha_anterior = orden.fecha_programada.strftime("%d/%m/%Y") if orden.fecha_programada else "Sin fecha"
+    orden.fecha_programada = nueva_fecha
+    orden.save()
+    from infrastructure.mail_service.adapters.servicio_notificacion_email import ServicioNotificacionEmail
+    notificador = ServicioNotificacionEmail()
+    notificador.notificar_reprogramacion_cliente(orden, fecha_anterior, nueva_fecha.strftime("%d/%m/%Y"))
+    messages.success(request, f"Orden reprogramada para el {nueva_fecha} — correo enviado al cliente")
+    return redirect("detalle_orden", orden_id=orden_id)
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def agregar_nota_interna(request, orden_id):
+    orden = get_object_or_404(OrdenMantencion, id=orden_id)
+    contenido = request.POST.get("contenido", "").strip()
+    if not contenido:
+        messages.error(request, "La nota no puede estar vacía")
+        return redirect("detalle_orden", orden_id=orden_id)
+    mecanico = Mecanico.objects.filter(email=request.user.email).first()
+    from infrastructure.models import NotaInterna
+    NotaInterna.objects.create(
+        orden=orden,
+        mecanico=mecanico,
+        contenido=contenido,
+    )
+    messages.success(request, "Nota agregada")
+    return redirect("detalle_orden", orden_id=orden_id)
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def editar_nota_interna(request, nota_id):
+    from infrastructure.models import NotaInterna
+    nota = get_object_or_404(NotaInterna, id=nota_id)
+    contenido = request.POST.get("contenido", "").strip()
+    if not contenido:
+        messages.error(request, "La nota no puede estar vacía")
+    else:
+        nota.contenido = contenido
+        nota.save()
+        messages.success(request, "Nota actualizada")
+    return redirect("detalle_orden", orden_id=nota.orden.id)
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def eliminar_nota_interna(request, nota_id):
+    from infrastructure.models import NotaInterna
+    nota = get_object_or_404(NotaInterna, id=nota_id)
+    orden_id = nota.orden.id
+    nota.delete()
+    messages.success(request, "Nota eliminada")
+    return redirect("detalle_orden", orden_id=orden_id)
+
+
+@login_required
+@_mecanico_required
+def lista_clientes(request):
+    clientes = Cliente.objects.prefetch_related(
+        "tractores__modelo",
+        "tractores__ordenes__mecanico_asignado",
+    ).all()
+
+    mecanico = Mecanico.objects.filter(email=request.user.email).first()
+
+    return render(request, "mecanico/lista_clientes.html", {
+        "clientes": clientes,
+        "mecanico": mecanico,
+    })

@@ -1,0 +1,461 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Dashboard Mecánico - Case{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<div id="modalCancelar" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden" onclick="if(event.target===this)cerrarModal()">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl" onclick="event.stopPropagation()">
+        <div class="text-center">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-50 dark:bg-red-900/30 flex items-center justify-center">
+                <svg class="w-8 h-8 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-[#0F172A] dark:text-white mb-2">Cancelar Mantención</h3>
+            <p class="text-[#64748B] dark:text-slate-400 mb-6">¿Estás seguro de que deseas cancelar esta mantención? Esta acción no se puede deshacer.</p>
+            <div class="flex gap-3">
+                <button type="button" onclick="cerrarModal()" class="flex-1 px-5 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl font-medium text-[#64748B] dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200">No</button>
+                <form id="formCancelar" method="POST" action="" class="flex-1">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full px-5 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-all duration-200">Sí, Cancelar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalEliminar" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden" onclick="if(event.target===this)cerrarModalEliminar()">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl" onclick="event.stopPropagation()">
+        <div class="text-center">
+            <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-50 dark:bg-red-900/30 flex items-center justify-center">
+                <svg class="w-8 h-8 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-[#0F172A] dark:text-white mb-2">Eliminar Orden</h3>
+            <p class="text-[#64748B] dark:text-slate-400 mb-6">¿Estás seguro de que deseas eliminar esta orden? El cliente ya no realizará la mantención. Esta acción no se puede deshacer.</p>
+            <div class="flex gap-3">
+                <button type="button" onclick="cerrarModalEliminar()" class="flex-1 px-5 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl font-medium text-[#64748B] dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200">No</button>
+                <form id="formEliminar" method="POST" action="" class="flex-1">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full px-5 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-all duration-200">Sí, Eliminar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function abrirModal(ordenId) {
+    document.getElementById('formCancelar').action = '/mecanico/orden/' + ordenId + '/cancelar/';
+    document.getElementById('modalCancelar').classList.remove('hidden');
+}
+function cerrarModal() {
+    document.getElementById('modalCancelar').classList.add('hidden');
+}
+function abrirModalEliminar(ordenId) {
+    document.getElementById('formEliminar').action = '/mecanico/orden/' + ordenId + '/eliminar/';
+    document.getElementById('modalEliminar').classList.remove('hidden');
+}
+function cerrarModalEliminar() {
+    document.getElementById('modalEliminar').classList.add('hidden');
+}
+</script>
+
+<div class="min-h-screen flex">
+    <aside class="w-64 bg-[#0F172A] min-h-screen flex flex-col shrink-0">
+        <div class="p-6 border-b border-slate-700">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-[#CC0000] flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-white font-semibold text-sm">Case</p>
+                    <p class="text-slate-400 text-xs">Mantenciones</p>
+                </div>
+            </div>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-1">
+            <a href="{% url 'dashboard_mecanico' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#CC0000] text-white font-medium transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                Dashboard
+            </a>
+            <a href="{% url 'lista_ordenes' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Órdenes
+            </a>
+            <a href="{% url 'lista_clientes' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Clientes
+            </a>
+
+            <a href="https://www.mycnhstore.com/sa/es/caseih/sa/cn/SA?site=sa&clear=true" target="_blank"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+                </svg>
+                MYCNHSTORE
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-700">
+            <div class="flex items-center gap-3 px-4 py-3">
+                <div class="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center text-white text-sm font-medium uppercase">
+                    {{ mecanico.nombre|make_list|first|default:user.username|make_list|first }}
+                </div>
+                <div>
+                    <p class="text-white text-sm font-medium">{{ mecanico.nombre|default:user.get_full_name|default:user.username }}</p>
+                    <p class="text-slate-400 text-xs">{{ mecanico.especialidad|default:"Técnico" }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="px-4 pb-4">
+            <a href="{% url 'logout' %}"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <main class="flex-1 overflow-auto">
+        <div class="p-8">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h1 class="text-2xl font-bold text-[#0F172A] dark:text-white">Dashboard</h1>
+                    <p class="text-[#64748B] dark:text-slate-400 mt-1">Cola de trabajos y órdenes activas</p>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2 bg-white dark:bg-slate-800 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></div>
+                        <span class="text-sm text-[#64748B] dark:text-slate-400">En línea</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-[#64748B] dark:text-slate-400">Pendientes</p>
+                            <p class="text-3xl font-bold text-[#0F172A] dark:text-white mt-1">{{ ordenes_pendientes|length }}</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-amber-50 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-[#64748B] dark:text-slate-400">En Progreso</p>
+                            <p class="text-3xl font-bold text-[#0F172A] dark:text-white mt-1">{{ ordenes_en_progreso|length }}</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-100 dark:border-slate-700 shadow-sm">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-[#64748B] dark:text-slate-400">Total Órdenes</p>
+                            <p class="text-3xl font-bold text-[#0F172A] dark:text-white mt-1">{{ total_ordenes }}</p>
+                        </div>
+                        <div class="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-semibold text-[#0F172A] dark:text-white">Calendario de Mantenciones</h2>
+                        <div class="flex items-center gap-2">
+                            <button type="button" id="cal-mes-ant" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                                <svg class="w-5 h-5 text-[#64748B] dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                                </svg>
+                            </button>
+                            <span id="cal-titulo" class="text-sm font-medium text-[#0F172A] dark:text-white min-w-[140px] text-center"></span>
+                            <button type="button" id="cal-mes-sig" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                                <svg class="w-5 h-5 text-[#64748B] dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-7 gap-1 text-center text-xs font-medium text-[#64748B] dark:text-slate-400 mb-2">
+                        <div class="py-2">Dom</div>
+                        <div class="py-2">Lun</div>
+                        <div class="py-2">Mar</div>
+                        <div class="py-2">Mié</div>
+                        <div class="py-2">Jue</div>
+                        <div class="py-2">Vie</div>
+                        <div class="py-2">Sáb</div>
+                    </div>
+                    <div id="cal-grid" class="grid grid-cols-7 gap-1"></div>
+                </div>
+            </div>
+
+            <script>
+            (function() {
+                const ocupadas = new Set({{ dias_ocupados_json|safe }});
+                const hoy = '{{ hoy_iso }}';
+                let mes = new Date().getMonth();
+                let año = new Date().getFullYear();
+
+                function renderCal() {
+                    const grid = document.getElementById('cal-grid');
+                    const titulo = document.getElementById('cal-titulo');
+                    const meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+                    titulo.textContent = meses[mes] + ' ' + año;
+
+                    const primerDia = new Date(año, mes, 1);
+                    const ultimoDia = new Date(año, mes + 1, 0);
+                    const inicioSemana = primerDia.getDay();
+                    const totalDias = ultimoDia.getDate();
+
+                    grid.innerHTML = '';
+
+                    for (let i = 0; i < inicioSemana; i++) {
+                        const empty = document.createElement('div');
+                        empty.className = 'py-2';
+                        grid.appendChild(empty);
+                    }
+
+                    for (let d = 1; d <= totalDias; d++) {
+                        const fecha = año + '-' + String(mes + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+                        const dia = document.createElement('div');
+                        dia.className = 'py-2 text-center text-sm rounded-lg relative';
+                        const esHoy = fecha === hoy;
+                        const esOcupado = ocupadas.has(fecha);
+
+                        if (esHoy) {
+                            dia.className += ' bg-[#CC0000] text-white font-semibold';
+                        } else if (esOcupado) {
+                            dia.className += ' bg-red-50 dark:bg-red-900/30 text-[#CC0000] dark:text-red-400 font-medium';
+                        } else {
+                            dia.className += ' text-[#0F172A] dark:text-slate-100';
+                        }
+
+                        dia.textContent = d;
+
+                        if (esOcupado && !esHoy) {
+                            const dot = document.createElement('span');
+                            dot.className = 'absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#CC0000] dark:bg-red-400';
+                            dia.appendChild(dot);
+                        }
+
+                        grid.appendChild(dia);
+                    }
+                }
+
+                document.getElementById('cal-mes-ant').addEventListener('click', function() {
+                    mes--;
+                    if (mes < 0) { mes = 11; año--; }
+                    renderCal();
+                });
+
+                document.getElementById('cal-mes-sig').addEventListener('click', function() {
+                    mes++;
+                    if (mes > 11) { mes = 0; año++; }
+                    renderCal();
+                });
+
+                renderCal();
+            })();
+            </script>
+
+            <div class="mb-8">
+                <h2 class="text-lg font-semibold text-[#0F172A] dark:text-white mb-4">Órdenes Pendientes</h2>
+                {% if ordenes_pendientes %}
+                <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {% for orden in ordenes_pendientes %}
+                    <div class="group relative bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-slate-200 dark:hover:border-slate-600 transition-all duration-200 overflow-hidden">
+                        <a href="{% url 'detalle_orden' orden.id %}" class="group block p-5">
+                            <div class="flex items-start justify-between mb-4">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                                    {% if orden.tipo_mantencion == 'mant_300h' %}bg-indigo-50 text-indigo-700
+                                    {% elif orden.tipo_mantencion == 'mant_600h' %}bg-amber-50 text-amber-700
+                                    {% elif orden.tipo_mantencion == 'mant_900h' %}bg-teal-50 text-teal-700
+                                    {% elif orden.tipo_mantencion == 'mant_1200h' %}bg-orange-50 text-orange-700
+                                    {% else %}bg-red-50 text-red-700{% endif %}">
+                                    {{ orden.get_tipo_mantencion_display }}
+                                </span>
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">
+                                    Pendiente
+                                </span>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center gap-2 text-[#0F172A] dark:text-white">
+                                    <svg class="w-4 h-4 text-[#64748B] dark:text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                    </svg>
+                                    <span class="text-sm font-medium truncate">{{ orden.tractor.modelo.nombre }}</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-[#64748B] dark:text-slate-400">
+                                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    <span class="text-sm">{{ orden.cliente.nombre }}</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-[#64748B] dark:text-slate-400">
+                                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <span class="text-sm">Pedido: {{ orden.fecha_solicitud|date:"d/m/Y H:i" }}</span>
+                                </div>
+                                {% if orden.fecha_programada %}
+                                <div class="flex items-center gap-2 text-[#64748B] dark:text-slate-400">
+                                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    <span class="text-sm">Programado: {{ orden.fecha_programada|date:"d/m/Y" }}</span>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-slate-100 dark:border-slate-700">
+                                <span class="text-sm font-medium text-[#CC0000] group-hover:text-[#990000] transition-colors duration-200">
+                                    Ver detalle →
+                                </span>
+                            </div>
+                        </a>
+                        <button type="button" onclick="event.stopPropagation();abrirModal('{{ orden.id }}')"
+                            class="absolute top-3 right-3 w-7 h-7 rounded-full bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors duration-200 opacity-0 group-hover:opacity-100 hover:opacity-100">
+                            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-12 text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-50 dark:bg-slate-700 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-slate-300 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                    </div>
+                    <p class="text-[#64748B] dark:text-slate-300 font-medium">No hay órdenes pendientes</p>
+                    <p class="text-sm text-slate-400 dark:text-slate-500 mt-1">Las nuevas solicitudes aparecerán aquí</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="mb-8">
+                <h2 class="text-lg font-semibold text-[#0F172A] dark:text-white mb-4">En Progreso</h2>
+                {% if ordenes_en_progreso %}
+                <div class="space-y-3">
+                    {% for orden in ordenes_en_progreso %}
+                    <a href="{% url 'detalle_orden' orden.id %}" class="block bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 p-5">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-[#0F172A] dark:text-white">{{ orden.tractor.modelo.nombre }} - {{ orden.cliente.nombre }}</p>
+                                    <p class="text-sm text-[#64748B] dark:text-slate-400">Pedido: {{ orden.fecha_solicitud|date:"d/m/Y" }}</p>
+                                    {% if orden.fecha_programada %}
+                                    <p class="text-sm text-[#64748B] dark:text-slate-400">Programado: {{ orden.fecha_programada|date:"d/m/Y" }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                                    {% if orden.tipo_mantencion == 'mant_300h' %}bg-indigo-50 text-indigo-700
+                                    {% elif orden.tipo_mantencion == 'mant_600h' %}bg-amber-50 text-amber-700
+                                    {% elif orden.tipo_mantencion == 'mant_900h' %}bg-teal-50 text-teal-700
+                                    {% elif orden.tipo_mantencion == 'mant_1200h' %}bg-orange-50 text-orange-700
+                                    {% else %}bg-red-50 text-red-700{% endif %}">
+                                    {{ orden.get_tipo_mantencion_display }}
+                                </span>
+                                <span class="text-sm text-[#CC0000] dark:text-red-400 font-medium">Ver →</span>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-8 text-center">
+                    <p class="text-[#64748B] dark:text-slate-300">No hay órdenes en progreso</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div>
+                <h2 class="text-lg font-semibold text-[#0F172A] dark:text-white mb-4">Asignadas</h2>
+                {% if ordenes_asignadas %}
+                <div class="space-y-3">
+                    {% for orden in ordenes_asignadas %}
+                    <div class="group relative">
+                        <a href="{% url 'detalle_orden' orden.id %}" class="block bg-white dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-200 p-5">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-[#0F172A] dark:text-white">{{ orden.tractor.modelo.nombre }} - {{ orden.cliente.nombre }}</p>
+                                        <p class="text-sm text-[#64748B] dark:text-slate-400">Mecánico: {{ orden.mecanico_asignado.nombre|default:"Sin asignar" }}</p>
+                                        <p class="text-sm text-[#64748B] dark:text-slate-400">Pedido: {{ orden.fecha_solicitud|date:"d/m/Y" }}</p>
+                                        {% if orden.fecha_programada %}
+                                        <p class="text-sm text-[#64748B] dark:text-slate-400">Programado: {{ orden.fecha_programada|date:"d/m/Y" }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700">
+                                        Asignada
+                                    </span>
+                                    <span class="text-sm text-[#CC0000] dark:text-red-400 font-medium">Ver →</span>
+                                </div>
+                            </div>
+                        </a>
+                        <button type="button" onclick="event.stopPropagation();abrirModalEliminar('{{ orden.id }}')"
+                            class="absolute top-3 right-3 w-7 h-7 rounded-full bg-red-50 hover:bg-red-100 flex items-center justify-center transition-colors duration-200 opacity-0 group-hover:opacity-100 hover:opacity-100">
+                            <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-8 text-center">
+                    <p class="text-[#64748B] dark:text-slate-300">No hay órdenes asignadas</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

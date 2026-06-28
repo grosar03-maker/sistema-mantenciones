@@ -1,0 +1,3 @@
+Usuario	Contraseña	Rol	Nombre
+grosa	cliente123	Cliente	Gustavo Rosa
+yrosa	mecanico123	Mecánico	Yonny Rosa

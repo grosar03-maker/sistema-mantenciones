@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mi Dashboard - Case{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-[#F8FAFC] via-white to-[#F1F5F9] dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+    <div class="max-w-5xl mx-auto px-4 py-12">
+        <div class="flex items-center justify-between mb-10">
+            <div>
+                <h1 class="text-3xl font-bold text-[#0F172A] dark:text-white">Mis Órdenes de Mantención</h1>
+                <p class="mt-1 text-[#64748B] dark:text-slate-400">Bienvenido, {{ cliente.nombre }}</p>
+            </div>
+            <a href="{% url 'solicitar_mantencion' %}"
+               class="inline-flex items-center gap-2 px-6 py-3 bg-[#CC0000] text-white rounded-xl font-semibold hover:bg-[#990000] transition-all duration-200 shadow-lg shadow-red-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Nueva Solicitud
+            </a>
+        </div>
+
+        {% if error %}
+        <div class="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-sm">
+            {{ error }}
+        </div>
+        {% endif %}
+
+        {% if ordenes %}
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-slate-200 dark:border-slate-700">
+                        <th class="text-left py-4 px-4 font-semibold text-[#0F172A] dark:text-white">N° Orden</th>
+                        <th class="text-left py-4 px-4 font-semibold text-[#0F172A] dark:text-white">Tractor</th>
+                        <th class="text-left py-4 px-4 font-semibold text-[#0F172A] dark:text-white">Tipo</th>
+                        <th class="text-left py-4 px-4 font-semibold text-[#0F172A] dark:text-white">Fecha Solicitud</th>
+                        <th class="text-left py-4 px-4 font-semibold text-[#0F172A] dark:text-white">Fecha Programada</th>
+                        <th class="text-left py-4 px-4 font-semibold text-[#0F172A] dark:text-white">Estado</th>
+                        <th class="text-left py-4 px-4 font-semibold text-[#0F172A] dark:text-white">Mecánico</th>
+                        <th class="text-left py-4 px-4 font-semibold text-[#0F172A] dark:text-white">Fotos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for orden in ordenes %}
+                    <tr class="border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                        <td class="py-4 px-4 font-mono text-xs text-[#64748B] dark:text-slate-400">{{ orden.id|truncatechars:8 }}</td>
+                        <td class="py-4 px-4 text-[#0F172A] dark:text-white font-medium">{{ orden.tractor.numero_serie }}</td>
+                        <td class="py-4 px-4 text-[#64748B] dark:text-slate-400">{{ orden.get_tipo_mantencion_display }}</td>
+                        <td class="py-4 px-4 text-[#64748B] dark:text-slate-400">{{ orden.fecha_solicitud|date:"d/m/Y" }}</td>
+                        <td class="py-4 px-4 text-[#64748B] dark:text-slate-400">{{ orden.fecha_programada|date:"d/m/Y"|default:"-" }}</td>
+                        <td class="py-4 px-4">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                {% if orden.estado == 'pendiente' %}bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300
+                                {% elif orden.estado == 'asignada' %}bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300
+                                {% elif orden.estado == 'en_progreso' %}bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300
+                                {% elif orden.estado == 'completada' %}bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300
+                                {% elif orden.estado == 'cancelada' %}bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300
+                                {% endif %}">
+                                {{ orden.get_estado_display }}
+                            </span>
+                        </td>
+                        <td class="py-4 px-4 text-[#64748B] dark:text-slate-400">{{ orden.mecanico_asignado.nombre|default:"-" }}</td>
+                        <td class="py-4 px-4">
+                            {% with count=orden.imagenes.count %}
+                            {% if count > 0 %}
+                            <span class="inline-flex items-center gap-1 text-xs text-[#64748B] dark:text-slate-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                {{ count }} foto{{ count|pluralize:"s" }}
+                            </span>
+                            {% else %}
+                            <span class="text-xs text-slate-300 dark:text-slate-600">-</span>
+                            {% endif %}
+                            {% endwith %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-20">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                <svg class="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+            </div>
+            <h2 class="text-xl font-semibold text-[#0F172A] dark:text-white mb-2">No tiene órdenes de mantención</h2>
+            <p class="text-[#64748B] dark:text-slate-400 mb-6">Cree su primera solicitud para comenzar</p>
+            <a href="{% url 'solicitar_mantencion' %}"
+               class="inline-flex items-center gap-2 px-6 py-3 bg-[#CC0000] text-white rounded-xl font-semibold hover:bg-[#990000] transition-all duration-200 shadow-lg shadow-red-200">
+                Solicitar Mantención
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

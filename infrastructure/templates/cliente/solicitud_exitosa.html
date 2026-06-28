@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Solicitud Enviada - Case{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-[#F8FAFC] dark:bg-slate-900 flex items-center justify-center px-4">
+    <div class="max-w-lg w-full text-center">
+        <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-green-50 dark:bg-green-900/30 flex items-center justify-center">
+            <svg class="w-10 h-10 text-green-500 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </div>
+
+        <h1 class="text-2xl font-bold text-[#0F172A] dark:text-white mb-3">Solicitud Enviada con Éxito</h1>
+
+        <p class="text-[#64748B] dark:text-slate-400 text-base leading-relaxed mb-2">
+            La solicitud de mantención fue enviada con éxito.
+        </p>
+        <p class="text-[#64748B] dark:text-slate-400 text-base leading-relaxed mb-8">
+            Se le envió un correo con la información de la solicitud a
+            <strong class="text-[#0F172A] dark:text-white">{{ email_cliente }}</strong>.
+        </p>
+
+        <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-6 mb-8 text-left">
+            <div class="space-y-3">
+                <div class="flex justify-between text-sm">
+                    <span class="text-[#64748B] dark:text-slate-400">Tractor</span>
+                    <span class="text-[#0F172A] dark:text-white font-medium">{{ modelo_tractor }}</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-[#64748B] dark:text-slate-400">N° Serie</span>
+                    <span class="text-[#0F172A] dark:text-white font-medium font-mono">{{ numero_serie }}</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-[#64748B] dark:text-slate-400">Tipo de Mantención</span>
+                    <span class="text-[#0F172A] dark:text-white font-medium">{{ tipo_mantencion }}</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-[#64748B] dark:text-slate-400">Fecha Programada</span>
+                    <span class="text-[#0F172A] dark:text-white font-medium">{{ fecha_programada|date:"d/m/Y" }}</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-[#64748B] dark:text-slate-400">Estado</span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700">Pendiente</span>
+                </div>
+            </div>
+        </div>
+
+        <a href="{% url 'home' %}"
+           class="inline-flex items-center gap-2 px-6 py-3 bg-[#CC0000] text-white font-medium rounded-xl hover:bg-[#990000] transition-colors duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            Volver al Inicio
+        </a>
+    </div>
+</div>
+{% endblock %}

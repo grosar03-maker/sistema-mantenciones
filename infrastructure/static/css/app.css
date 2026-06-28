@@ -1,0 +1,21 @@
+.step-content {
+    transition: opacity 0.3s ease-in-out;
+}
+
+.tipo-card input:checked ~ div div:first-child {
+    background-color: #FEF2F2;
+}
+
+@keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.animate-pulse-soft {
+    animation: pulse-soft 2s ease-in-out infinite;
+}
+
+[data-step].active .step-circle {
+    background-color: #CC0000;
+    color: white;
+}
