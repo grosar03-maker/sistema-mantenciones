@@ -113,7 +113,7 @@ class ItemCatalogo(models.Model):
     class Meta:
         verbose_name = "Item del Catálogo"
         verbose_name_plural = "Items del Catálogo"
-        db_table = "catalogo_repuestos_repuestos"
+        db_table = "items_catalogo"
         unique_together = ("catalogo", "repuesto")
 
     def __str__(self) -> str:
