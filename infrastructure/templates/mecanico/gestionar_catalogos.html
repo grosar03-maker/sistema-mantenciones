@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Catálogos por Mantención - Case{% endblock %}
+
+{% block nav %}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex">
+    <aside class="w-64 bg-[#0F172A] min-h-screen flex flex-col shrink-0">
+        <div class="p-6 border-b border-slate-700">
+            <a href="{% url 'dashboard_mecanico' %}" class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-[#CC0000] flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-white font-semibold text-sm">Case</p>
+                    <p class="text-slate-400 text-xs">Mantenciones</p>
+                </div>
+            </a>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-1">
+            <a href="{% url 'dashboard_mecanico' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                Dashboard
+            </a>
+            <a href="{% url 'lista_ordenes' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                Órdenes
+            </a>
+            <a href="{% url 'lista_clientes' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Clientes
+            </a>
+
+            <div class="pt-4 pb-1 px-4">
+                <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Catálogo</p>
+            </div>
+            <a href="{% url 'listar_modelos' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                Modelos
+            </a>
+            <a href="{% url 'listar_repuestos' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                Repuestos
+            </a>
+            <a href="{% url 'listar_catalogos' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#CC0000] text-white font-medium transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+                </svg>
+                Catálogos
+            </a>
+            <div class="border-t border-slate-700 my-2"></div>
+            <a href="https://www.mycnhstore.com/sa/es/caseih/sa/cn/SA?site=sa&clear=true" target="_blank"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z" />
+                </svg>
+                MYCNHSTORE
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-slate-700">
+            <div class="flex items-center gap-3 px-4 py-3">
+                <div class="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center text-white text-sm font-medium uppercase">
+                    {{ mecanico.nombre|make_list|first|default:user.username|make_list|first }}
+                </div>
+                <div>
+                    <p class="text-white text-sm font-medium">{{ mecanico.nombre|default:user.get_full_name|default:user.username }}</p>
+                    <p class="text-slate-400 text-xs">{{ mecanico.especialidad|default:"Técnico" }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="px-4 pb-4">
+            <a href="{% url 'logout' %}"
+               class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all duration-200">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Cerrar Sesión
+            </a>
+        </div>
+    </aside>
+
+    <main class="flex-1 overflow-auto">
+        <div class="p-8">
+            {% if messages %}
+            <div class="mb-6 space-y-2">
+                {% for message in messages %}
+                <div class="flex items-center gap-3 px-5 py-4 rounded-xl text-sm font-medium
+                    {% if message.tags == 'success' %}bg-green-50 text-green-700 border border-green-200
+                    {% elif message.tags == 'error' %}bg-red-50 text-red-700 border border-red-200
+                    {% elif message.tags == 'warning' %}bg-amber-50 text-amber-700 border border-amber-200
+                    {% elif message.tags == 'info' %}bg-blue-50 text-blue-700 border border-blue-200
+                    {% else %}bg-blue-50 text-blue-700 border border-blue-200{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h1 class="text-2xl font-bold text-[#0F172A] dark:text-white">Catálogos por Mantención</h1>
+                    <p class="text-[#64748B] dark:text-slate-400 mt-1">Asocia repuestos y cantidades a cada modelo según el tipo de mantención</p>
+                </div>
+            </div>
+
+            <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden mb-8">
+                <div class="p-6 border-b border-slate-100 dark:border-slate-700">
+                    <h2 class="text-lg font-semibold text-[#0F172A] dark:text-white">Nuevo Catálogo</h2>
+                </div>
+                <form method="POST" action="{% url 'crear_catalogo' %}" class="p-6">
+                    {% csrf_token %}
+                    <div class="flex gap-4 items-end">
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-[#64748B] dark:text-slate-400 mb-1">Modelo</label>
+                            <select name="modelo_id" required
+                                    class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none">
+                                <option value="">Seleccionar modelo...</option>
+                                {% for m in modelos %}
+                                <option value="{{ m.id }}">{{ m.marca }} {{ m.nombre }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-[#64748B] dark:text-slate-400 mb-1">Tipo de Mantención</label>
+                            <select name="tipo_mantencion" required
+                                    class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none">
+                                <option value="">Seleccionar...</option>
+                                {% for val, label in tipos_mantencion %}
+                                <option value="{{ val }}">{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit"
+                                class="px-6 py-3 bg-[#CC0000] text-white rounded-xl font-medium hover:bg-[#990000] transition-all duration-200">
+                            Crear Catálogo
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            {% for catalogo in catalogos %}
+            <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden mb-6">
+                <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
+                    <div class="flex items-center gap-3">
+                        <h3 class="font-semibold text-[#0F172A] dark:text-white">{{ catalogo.modelo.marca }} {{ catalogo.modelo.nombre }}</h3>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                            {% if catalogo.tipo_mantencion == 'mant_300h' %}bg-indigo-50 text-indigo-700
+                            {% elif catalogo.tipo_mantencion == 'mant_600h' %}bg-amber-50 text-amber-700
+                            {% elif catalogo.tipo_mantencion == 'mant_900h' %}bg-teal-50 text-teal-700
+                            {% elif catalogo.tipo_mantencion == 'mant_1200h' %}bg-orange-50 text-orange-700
+                            {% else %}bg-red-50 text-red-700{% endif %}">
+                            {{ catalogo.get_tipo_mantencion_display }}
+                        </span>
+                    </div>
+                    <form method="POST" action="{% url 'eliminar_catalogo' catalogo.id %}" onsubmit="return confirm('¿Eliminar todo el catálogo?')">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="px-3 py-2 text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors duration-200">
+                            Eliminar Catálogo
+                        </button>
+                    </form>
+                </div>
+
+                <div class="p-6">
+                    {% with items=catalogo.items.all %}
+                    {% if items %}
+                    <table class="w-full mb-4">
+                        <thead>
+                            <tr class="border-b border-slate-100 dark:border-slate-700">
+                                <th class="text-left px-4 py-3 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase tracking-wider">Código CNH</th>
+                                <th class="text-left px-4 py-3 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase tracking-wider">Repuesto</th>
+                                <th class="text-left px-4 py-3 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase tracking-wider">Tipo</th>
+                                <th class="text-center px-4 py-3 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase tracking-wider">Cantidad</th>
+                                <th class="text-right px-4 py-3 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase tracking-wider">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50 dark:divide-slate-700/50">
+                            {% for item in items %}
+                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
+                                <td class="px-4 py-3 text-sm font-mono text-[#CC0000] dark:text-red-400">{{ item.repuesto.codigo }}</td>
+                                <td class="px-4 py-3 text-sm text-[#0F172A] dark:text-white">{{ item.repuesto.nombre }}</td>
+                                <td class="px-4 py-3">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                        {% if 'filtro' in item.repuesto.tipo %}bg-indigo-50 text-indigo-700
+                                        {% elif 'lubricante' in item.repuesto.tipo %}bg-amber-50 text-amber-700
+                                        {% else %}bg-slate-50 text-slate-600{% endif %}">
+                                        {{ item.repuesto.get_tipo_display }}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-3 text-center">
+                                    <form method="POST" action="{% url 'editar_item_catalogo' item.id %}" class="inline-flex items-center gap-1">
+                                        {% csrf_token %}
+                                        <input type="number" name="cantidad" value="{{ item.cantidad }}" min="1"
+                                               class="w-16 px-2 py-1 text-center text-sm border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white focus:border-[#CC0000] outline-none">
+                                        <button type="submit"
+                                                class="px-2 py-1 text-xs text-[#64748B] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors">
+                                            OK
+                                        </button>
+                                    </form>
+                                </td>
+                                <td class="px-4 py-3 text-right">
+                                    <form method="POST" action="{% url 'eliminar_item_catalogo' item.id %}" onsubmit="return confirm('¿Quitar {{ item.repuesto.nombre }} del catálogo?')" class="inline">
+                                        {% csrf_token %}
+                                        <button type="submit"
+                                                class="px-2 py-1 text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors duration-200">
+                                            Quitar
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p class="text-center py-6 text-[#64748B] dark:text-slate-400 text-sm">Sin repuestos asignados</p>
+                    {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" action="{% url 'agregar_item_catalogo' catalogo.id %}" class="flex gap-3 items-end pt-4 border-t border-slate-100 dark:border-slate-700">
+                        {% csrf_token %}
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-[#64748B] dark:text-slate-400 mb-1">Agregar Repuesto</label>
+                            <select name="repuesto_id"
+                                    class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none">
+                                <option value="">Seleccionar repuesto...</option>
+                                {% for r in repuestos %}
+                                <option value="{{ r.id }}">[{{ r.codigo }}] {{ r.nombre }} - {{ r.get_tipo_display }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="w-24">
+                            <label class="block text-xs font-medium text-[#64748B] dark:text-slate-400 mb-1">Cantidad</label>
+                            <input type="number" name="cantidad" value="1" min="1"
+                                   class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none text-center">
+                        </div>
+                        <button type="submit"
+                                class="px-5 py-3 bg-[#CC0000] text-white rounded-xl font-medium hover:bg-[#990000] transition-all duration-200">
+                            Agregar
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+            <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-12 text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-50 dark:bg-slate-700 flex items-center justify-center">
+                    <svg class="w-8 h-8 text-slate-300 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                </div>
+                <p class="text-[#64748B] dark:text-slate-300 font-medium">No hay catálogos aún</p>
+                <p class="text-sm text-slate-400 dark:text-slate-500 mt-1">Crea un catálogo seleccionando modelo y tipo de mantención</p>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+</div>
+{% endblock %}

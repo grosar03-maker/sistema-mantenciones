@@ -101,6 +101,25 @@ class Repuesto(models.Model):
         return f"[{self.codigo}] {self.nombre}"
 
 
+class ItemCatalogo(models.Model):
+    catalogo = models.ForeignKey(
+        "CatalogoRepuestos", on_delete=models.CASCADE, related_name="items"
+    )
+    repuesto = models.ForeignKey(
+        "Repuesto", on_delete=models.CASCADE, related_name="items_catalogo"
+    )
+    cantidad = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        verbose_name = "Item del Catálogo"
+        verbose_name_plural = "Items del Catálogo"
+        db_table = "catalogo_repuestos_repuestos"
+        unique_together = ("catalogo", "repuesto")
+
+    def __str__(self) -> str:
+        return f"{self.catalogo} - {self.repuesto.nombre} x{self.cantidad}"
+
+
 class CatalogoRepuestos(models.Model):
     TIPOS_MANTENCION = [
         ("mant_300h", "300 Horas"),
@@ -115,7 +134,7 @@ class CatalogoRepuestos(models.Model):
         ModeloTractor, on_delete=models.CASCADE, related_name="catalogos"
     )
     tipo_mantencion = models.CharField(max_length=30, choices=TIPOS_MANTENCION)
-    repuestos = models.ManyToManyField(Repuesto, related_name="catalogos")
+    repuestos = models.ManyToManyField(Repuesto, through=ItemCatalogo, related_name="catalogos")
 
     class Meta:
         verbose_name = "Catálogo de Repuestos"

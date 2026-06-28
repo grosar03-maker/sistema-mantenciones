@@ -12,6 +12,10 @@ from infrastructure.views.mecanico_views import (
     dashboard, detalle_orden, lista_ordenes, lista_clientes,
     asignar_orden, iniciar_orden, completar_orden, cancelar_orden, eliminar_orden,
     reprogramar_orden, agregar_nota_interna, editar_nota_interna, eliminar_nota_interna,
+    listar_modelos, crear_modelo, editar_modelo, eliminar_modelo,
+    listar_repuestos, crear_repuesto, editar_repuesto, eliminar_repuesto,
+    listar_catalogos, crear_catalogo, eliminar_catalogo,
+    agregar_item_catalogo, editar_item_catalogo, eliminar_item_catalogo,
 )
 
 urlpatterns = [
@@ -38,6 +42,20 @@ urlpatterns = [
     path("mecanico/nota/<uuid:nota_id>/editar/", editar_nota_interna, name="editar_nota_interna"),
     path("mecanico/nota/<uuid:nota_id>/eliminar/", eliminar_nota_interna, name="eliminar_nota_interna"),
     path("cliente/dashboard/", dashboard_cliente, name="dashboard_cliente"),
+    path("mecanico/modelos/", listar_modelos, name="listar_modelos"),
+    path("mecanico/modelos/crear/", crear_modelo, name="crear_modelo"),
+    path("mecanico/modelos/<uuid:modelo_id>/editar/", editar_modelo, name="editar_modelo"),
+    path("mecanico/modelos/<uuid:modelo_id>/eliminar/", eliminar_modelo, name="eliminar_modelo"),
+    path("mecanico/repuestos/", listar_repuestos, name="listar_repuestos"),
+    path("mecanico/repuestos/crear/", crear_repuesto, name="crear_repuesto"),
+    path("mecanico/repuestos/<uuid:repuesto_id>/editar/", editar_repuesto, name="editar_repuesto"),
+    path("mecanico/repuestos/<uuid:repuesto_id>/eliminar/", eliminar_repuesto, name="eliminar_repuesto"),
+    path("mecanico/catalogos/", listar_catalogos, name="listar_catalogos"),
+    path("mecanico/catalogos/crear/", crear_catalogo, name="crear_catalogo"),
+    path("mecanico/catalogos/<uuid:catalogo_id>/eliminar/", eliminar_catalogo, name="eliminar_catalogo"),
+    path("mecanico/catalogos/<uuid:catalogo_id>/agregar-item/", agregar_item_catalogo, name="agregar_item_catalogo"),
+    path("mecanico/items/<uuid:item_id>/editar/", editar_item_catalogo, name="editar_item_catalogo"),
+    path("mecanico/items/<uuid:item_id>/eliminar/", eliminar_item_catalogo, name="eliminar_item_catalogo"),
 ]
 
 if settings.DEBUG:

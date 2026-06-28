@@ -3,7 +3,7 @@ from pathlib import Path
 
 from django.core.management.base import BaseCommand
 
-from infrastructure.models import ModeloTractor, Repuesto, CatalogoRepuestos
+from infrastructure.models import ModeloTractor, Repuesto, CatalogoRepuestos, ItemCatalogo
 
 
 def _clasificar_tipo(nombre):
@@ -88,8 +88,11 @@ class Command(BaseCommand):
             catalogo, created = CatalogoRepuestos.objects.get_or_create(
                 modelo=modelo, tipo_mantencion=tipo_mant
             )
-            repuestos = [repuestos_vistos[c] for c in codigos]
-            catalogo.repuestos.set(repuestos)
+            existing = {it.repuesto_id for it in ItemCatalogo.objects.filter(catalogo=catalogo)}
+            for c in codigos:
+                repuesto = repuestos_vistos[c]
+                if repuesto.id not in existing:
+                    ItemCatalogo.objects.create(catalogo=catalogo, repuesto=repuesto, cantidad=1)
 
         count_catalogos = len(catalogo_rows)
 

@@ -13,7 +13,7 @@ from application.use_cases.iniciar_mantencion import IniciarMantencion
 from application.use_cases.completar_mantencion import CompletarMantencion
 from domain.value_objects.estado_orden import EstadoOrden
 from infrastructure.mail_service.adapters.servicio_notificacion_email import ServicioNotificacionEmail
-from infrastructure.models import Cliente, Mecanico, OrdenMantencion
+from infrastructure.models import Cliente, Mecanico, ModeloTractor, Repuesto, CatalogoRepuestos, ItemCatalogo, OrdenMantencion
 from infrastructure.persistence.adapters.repositorio_mecanico_sql import RepositorioMecanicoSQL
 from infrastructure.persistence.adapters.repositorio_orden_mantencion_sql import RepositorioOrdenMantencionSQL
 
@@ -330,3 +330,218 @@ def lista_clientes(request):
         "clientes": clientes,
         "mecanico": mecanico,
     })
+
+
+# ─── Catálogo CRUD ────────────────────────────────────────────────
+
+@login_required
+@_mecanico_required
+def listar_modelos(request):
+    modelos = ModeloTractor.objects.all()
+    mecanico = Mecanico.objects.filter(email=request.user.email).first()
+    return render(request, "mecanico/gestionar_modelos.html", {
+        "modelos": modelos,
+        "mecanico": mecanico,
+    })
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def crear_modelo(request):
+    nombre = request.POST.get("nombre", "").strip()
+    marca = request.POST.get("marca", "Case").strip()
+    if not nombre:
+        messages.error(request, "El nombre del modelo es obligatorio")
+        return redirect("listar_modelos")
+    ModeloTractor.objects.create(nombre=nombre, marca=marca)
+    messages.success(request, f"Modelo {marca} {nombre} creado")
+    return redirect("listar_modelos")
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def editar_modelo(request, modelo_id):
+    modelo = get_object_or_404(ModeloTractor, id=modelo_id)
+    nombre = request.POST.get("nombre", "").strip()
+    marca = request.POST.get("marca", "Case").strip()
+    if not nombre:
+        messages.error(request, "El nombre del modelo es obligatorio")
+        return redirect("listar_modelos")
+    modelo.nombre = nombre
+    modelo.marca = marca
+    modelo.save()
+    messages.success(request, f"Modelo actualizado: {marca} {nombre}")
+    return redirect("listar_modelos")
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def eliminar_modelo(request, modelo_id):
+    modelo = get_object_or_404(ModeloTractor, id=modelo_id)
+    nombre = str(modelo)
+    modelo.delete()
+    messages.success(request, f"Modelo {nombre} eliminado")
+    return redirect("listar_modelos")
+
+
+@login_required
+@_mecanico_required
+def listar_repuestos(request):
+    repuestos = Repuesto.objects.all()
+    mecanico = Mecanico.objects.filter(email=request.user.email).first()
+    return render(request, "mecanico/gestionar_repuestos.html", {
+        "repuestos": repuestos,
+        "mecanico": mecanico,
+        "tipos_repuesto": Repuesto.TIPOS_REPUESTO,
+    })
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def crear_repuesto(request):
+    codigo = request.POST.get("codigo", "").strip()
+    nombre = request.POST.get("nombre", "").strip()
+    tipo = request.POST.get("tipo", "").strip()
+    if not codigo or not nombre or not tipo:
+        messages.error(request, "Todos los campos son obligatorios")
+        return redirect("listar_repuestos")
+    if Repuesto.objects.filter(codigo=codigo).exists():
+        messages.error(request, f"Ya existe un repuesto con el código {codigo}")
+        return redirect("listar_repuestos")
+    Repuesto.objects.create(codigo=codigo, nombre=nombre, tipo=tipo)
+    messages.success(request, f"Repuesto {codigo} - {nombre} creado")
+    return redirect("listar_repuestos")
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def editar_repuesto(request, repuesto_id):
+    repuesto = get_object_or_404(Repuesto, id=repuesto_id)
+    codigo = request.POST.get("codigo", "").strip()
+    nombre = request.POST.get("nombre", "").strip()
+    tipo = request.POST.get("tipo", "").strip()
+    if not codigo or not nombre or not tipo:
+        messages.error(request, "Todos los campos son obligatorios")
+        return redirect("listar_repuestos")
+    if Repuesto.objects.filter(codigo=codigo).exclude(id=repuesto.id).exists():
+        messages.error(request, f"Ya existe otro repuesto con el código {codigo}")
+        return redirect("listar_repuestos")
+    repuesto.codigo = codigo
+    repuesto.nombre = nombre
+    repuesto.tipo = tipo
+    repuesto.save()
+    messages.success(request, f"Repuesto {codigo} actualizado")
+    return redirect("listar_repuestos")
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def eliminar_repuesto(request, repuesto_id):
+    repuesto = get_object_or_404(Repuesto, id=repuesto_id)
+    ref = str(repuesto)
+    repuesto.delete()
+    messages.success(request, f"Repuesto {ref} eliminado")
+    return redirect("listar_repuestos")
+
+
+@login_required
+@_mecanico_required
+def listar_catalogos(request):
+    modelos = ModeloTractor.objects.all()
+    repuestos = Repuesto.objects.all()
+    catalogos = CatalogoRepuestos.objects.prefetch_related("items__repuesto").all()
+    mecanico = Mecanico.objects.filter(email=request.user.email).first()
+    return render(request, "mecanico/gestionar_catalogos.html", {
+        "modelos": modelos,
+        "repuestos": repuestos,
+        "catalogos": catalogos,
+        "mecanico": mecanico,
+        "tipos_mantencion": CatalogoRepuestos.TIPOS_MANTENCION,
+    })
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def crear_catalogo(request):
+    modelo_id = request.POST.get("modelo_id", "").strip()
+    tipo_mantencion = request.POST.get("tipo_mantencion", "").strip()
+    if not modelo_id or not tipo_mantencion:
+        messages.error(request, "Debe seleccionar modelo y tipo de mantención")
+        return redirect("listar_catalogos")
+    catalogo, created = CatalogoRepuestos.objects.get_or_create(
+        modelo_id=modelo_id, tipo_mantencion=tipo_mantencion
+    )
+    if created:
+        messages.success(request, "Catálogo creado")
+    else:
+        messages.info(request, "El catálogo ya existe")
+    return redirect("listar_catalogos")
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def eliminar_catalogo(request, catalogo_id):
+    catalogo = get_object_or_404(CatalogoRepuestos, id=catalogo_id)
+    catalogo.delete()
+    messages.success(request, "Catálogo eliminado")
+    return redirect("listar_catalogos")
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def agregar_item_catalogo(request, catalogo_id):
+    catalogo = get_object_or_404(CatalogoRepuestos, id=catalogo_id)
+    repuesto_id = request.POST.get("repuesto_id", "").strip()
+    cantidad = request.POST.get("cantidad", "1").strip()
+    if not repuesto_id:
+        messages.error(request, "Debe seleccionar un repuesto")
+        return redirect("listar_catalogos")
+    try:
+        cantidad = int(cantidad)
+        if cantidad < 1:
+            cantidad = 1
+    except ValueError:
+        cantidad = 1
+    if ItemCatalogo.objects.filter(catalogo=catalogo, repuesto_id=repuesto_id).exists():
+        messages.warning(request, "Ese repuesto ya está en el catálogo")
+        return redirect("listar_catalogos")
+    ItemCatalogo.objects.create(catalogo=catalogo, repuesto_id=repuesto_id, cantidad=cantidad)
+    messages.success(request, "Repuesto agregado al catálogo")
+    return redirect("listar_catalogos")
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def editar_item_catalogo(request, item_id):
+    item = get_object_or_404(ItemCatalogo, id=item_id)
+    cantidad = request.POST.get("cantidad", "1").strip()
+    try:
+        cantidad = int(cantidad)
+        if cantidad < 1:
+            cantidad = 1
+    except ValueError:
+        cantidad = 1
+    item.cantidad = cantidad
+    item.save()
+    messages.success(request, "Cantidad actualizada")
+    return redirect("listar_catalogos")
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def eliminar_item_catalogo(request, item_id):
+    item = get_object_or_404(ItemCatalogo, id=item_id)
+    item.delete()
+    messages.success(request, "Repuesto eliminado del catálogo")
+    return redirect("listar_catalogos")
