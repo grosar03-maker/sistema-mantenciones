@@ -84,6 +84,10 @@ class Repuesto(models.Model):
         ("lubricante_motor", "Lubricante de Motor"),
         ("lubricante_transmision", "Lubricante de Transmisión"),
         ("lubricante_hidraulico", "Lubricante Hidráulico"),
+        ("motor", "Motor"),
+        ("transmision", "Transmisión"),
+        ("cabina", "Cabina"),
+        ("accesorios", "Accesorios"),
         ("otro", "Otro"),
     ]
 
