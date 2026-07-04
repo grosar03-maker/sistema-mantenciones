@@ -116,7 +116,7 @@
             <div class="flex items-center justify-between mb-8">
                 <div>
                     <h1 class="text-2xl font-bold text-[#0F172A] dark:text-white">Catálogos por Mantención</h1>
-                    <p class="text-[#64748B] dark:text-slate-400 mt-1">Asocia repuestos y cantidades a cada modelo según el tipo de mantención</p>
+                    <p class="text-[#64748B] dark:text-slate-400 mt-1">Selecciona un modelo para ver sus mantenciones</p>
                 </div>
             </div>
 
@@ -155,108 +155,141 @@
                 </form>
             </div>
 
-            {% for catalogo in catalogos %}
-            <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden mb-6">
-                <div class="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between bg-slate-50 dark:bg-slate-800/50">
-                    <div class="flex items-center gap-3">
-                        <h3 class="font-semibold text-[#0F172A] dark:text-white">{{ catalogo.modelo.marca }} {{ catalogo.modelo.nombre }}</h3>
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
-                            {% if catalogo.tipo_mantencion == 'mant_300h' %}bg-indigo-50 text-indigo-700
-                            {% elif catalogo.tipo_mantencion == 'mant_600h' %}bg-amber-50 text-amber-700
-                            {% elif catalogo.tipo_mantencion == 'mant_900h' %}bg-teal-50 text-teal-700
-                            {% elif catalogo.tipo_mantencion == 'mant_1200h' %}bg-orange-50 text-orange-700
-                            {% else %}bg-red-50 text-red-700{% endif %}">
-                            {{ catalogo.get_tipo_mantencion_display }}
-                        </span>
+            {% for modelo in modelos %}
+            {% with total_cat=modelo.catalogos.count %}
+            <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden mb-4">
+                <button type="button"
+                    onclick="toggleModelo('modelo-{{ forloop.counter }}', this)"
+                    class="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-200 text-left">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-700 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5 text-[#64748B] dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-[#0F172A] dark:text-white">{{ modelo.marca }} {{ modelo.nombre }}</h3>
+                        </div>
                     </div>
-                    <form method="POST" action="{% url 'eliminar_catalogo' catalogo.id %}" onsubmit="return confirm('¿Eliminar todo el catálogo?')">
-                        {% csrf_token %}
-                        <button type="submit"
-                                class="px-3 py-2 text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors duration-200">
-                            Eliminar Catálogo
-                        </button>
-                    </form>
-                </div>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs text-[#64748B] dark:text-slate-300 bg-slate-50 dark:bg-slate-700 px-3 py-1 rounded-full">
+                            {{ total_cat }} mantención{{ total_cat|pluralize:"es" }}
+                        </span>
+                        <svg class="w-5 h-5 text-[#64748B] dark:text-slate-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                </button>
 
-                <div class="p-6">
-                    {% with items=catalogo.items.all %}
-                    {% if items %}
-                    <table class="w-full mb-4">
-                        <thead>
-                            <tr class="border-b border-slate-100 dark:border-slate-700">
-                                <th class="text-left px-4 py-3 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase tracking-wider">Código CNH</th>
-                                <th class="text-left px-4 py-3 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase tracking-wider">Repuesto</th>
-                                <th class="text-left px-4 py-3 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase tracking-wider">Tipo</th>
-                                <th class="text-center px-4 py-3 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase tracking-wider">Cantidad</th>
-                                <th class="text-right px-4 py-3 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase tracking-wider">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-50 dark:divide-slate-700/50">
-                            {% for item in items %}
-                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors">
-                                <td class="px-4 py-3 text-sm font-mono text-[#CC0000] dark:text-red-400">{{ item.repuesto.codigo }}</td>
-                                <td class="px-4 py-3 text-sm text-[#0F172A] dark:text-white">{{ item.repuesto.nombre }}</td>
-                                <td class="px-4 py-3">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                        {% if 'filtro' in item.repuesto.tipo %}bg-indigo-50 text-indigo-700
-                                        {% elif 'lubricante' in item.repuesto.tipo %}bg-amber-50 text-amber-700
-                                        {% else %}bg-slate-50 text-slate-600{% endif %}">
-                                        {{ item.repuesto.get_tipo_display }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3 text-center">
-                                    <form method="POST" action="{% url 'editar_item_catalogo' item.id %}" class="inline-flex items-center gap-1">
-                                        {% csrf_token %}
-                                        <input type="number" name="cantidad" value="{{ item.cantidad }}" min="1"
-                                               class="w-16 px-2 py-1 text-center text-sm border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white focus:border-[#CC0000] outline-none">
-                                        <button type="submit"
-                                                class="px-2 py-1 text-xs text-[#64748B] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors">
-                                            OK
-                                        </button>
-                                    </form>
-                                </td>
-                                <td class="px-4 py-3 text-right">
-                                    <form method="POST" action="{% url 'eliminar_item_catalogo' item.id %}" onsubmit="return confirm('¿Quitar {{ item.repuesto.nombre }} del catálogo?')" class="inline">
-                                        {% csrf_token %}
-                                        <button type="submit"
-                                                class="px-2 py-1 text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors duration-200">
-                                            Quitar
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+                <div id="modelo-{{ forloop.counter }}" class="hidden border-t border-slate-100 dark:border-slate-700">
+                    {% if total_cat %}
+                    {% for catalogo in modelo.catalogos.all %}
+                    <div class="{% if not forloop.last %}border-b border-slate-50 dark:border-slate-700/50{% endif %}">
+                        <div class="px-6 py-3 bg-slate-50/50 dark:bg-slate-700/50 flex items-center justify-between">
+                            <div class="flex items-center gap-2 text-sm">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
+                                    {% if catalogo.tipo_mantencion == 'mant_300h' %}bg-indigo-50 text-indigo-700
+                                    {% elif catalogo.tipo_mantencion == 'mant_600h' %}bg-amber-50 text-amber-700
+                                    {% elif catalogo.tipo_mantencion == 'mant_900h' %}bg-teal-50 text-teal-700
+                                    {% elif catalogo.tipo_mantencion == 'mant_1200h' %}bg-orange-50 text-orange-700
+                                    {% else %}bg-red-50 text-red-700{% endif %}">
+                                    {{ catalogo.get_tipo_mantencion_display }}
+                                </span>
+                                <span class="text-[#64748B] dark:text-slate-400 text-xs">· {{ catalogo.items.count }} repuesto{{ catalogo.items.count|pluralize:"s" }}</span>
+                            </div>
+                            <form method="POST" action="{% url 'eliminar_catalogo' catalogo.id %}" onsubmit="return confirm('¿Eliminar todo el catálogo?')">
+                                {% csrf_token %}
+                                <button type="submit"
+                                        class="px-2 py-1 text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors duration-200">
+                                    Eliminar
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="p-4">
+                            {% with items=catalogo.items.all %}
+                            {% if items %}
+                            <table class="w-full mb-3">
+                                <thead>
+                                    <tr class="border-b border-slate-100 dark:border-slate-700">
+                                        <th class="text-left px-3 py-2 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase">Código CNH</th>
+                                        <th class="text-left px-3 py-2 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase">Repuesto</th>
+                                        <th class="text-left px-3 py-2 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase">Tipo</th>
+                                        <th class="text-center px-3 py-2 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase">Cant.</th>
+                                        <th class="text-right px-3 py-2 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase"></th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-50 dark:divide-slate-700/50">
+                                    {% for item in items %}
+                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/30">
+                                        <td class="px-3 py-2 text-sm font-mono text-[#CC0000] dark:text-red-400">{{ item.repuesto.codigo }}</td>
+                                        <td class="px-3 py-2 text-sm text-[#0F172A] dark:text-white">{{ item.repuesto.nombre }}</td>
+                                        <td class="px-3 py-2">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
+                                                {% if 'filtro' in item.repuesto.tipo %}bg-indigo-50 text-indigo-700
+                                                {% elif 'lubricante' in item.repuesto.tipo %}bg-amber-50 text-amber-700
+                                                {% else %}bg-slate-50 text-slate-600{% endif %}">
+                                                {{ item.repuesto.get_tipo_display }}
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-2 text-center">
+                                            <form method="POST" action="{% url 'editar_item_catalogo' item.id %}" class="inline-flex items-center gap-1">
+                                                {% csrf_token %}
+                                                <input type="number" name="cantidad" value="{{ item.cantidad }}" min="1"
+                                                       class="w-14 px-2 py-1 text-center text-sm border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white focus:border-[#CC0000] outline-none">
+                                                <button type="submit"
+                                                        class="px-2 py-1 text-xs text-[#64748B] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded transition-colors">
+                                                    OK
+                                                </button>
+                                            </form>
+                                        </td>
+                                        <td class="px-3 py-2 text-right">
+                                            <form method="POST" action="{% url 'eliminar_item_catalogo' item.id %}" onsubmit="return confirm('¿Quitar {{ item.repuesto.nombre }}?')" class="inline">
+                                                {% csrf_token %}
+                                                <button type="submit"
+                                                        class="px-2 py-1 text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors">
+                                                    &times;
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% else %}
+                            <p class="text-center py-3 text-[#64748B] dark:text-slate-400 text-sm">Sin repuestos asignados</p>
+                            {% endif %}
+                            {% endwith %}
+
+                            <form method="POST" action="{% url 'agregar_item_catalogo' catalogo.id %}" class="flex gap-2 items-end">
+                                {% csrf_token %}
+                                <div class="flex-1">
+                                    <select name="repuesto_id"
+                                            class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white focus:border-[#CC0000] outline-none">
+                                        <option value="">Agregar repuesto...</option>
+                                        {% for r in repuestos %}
+                                        <option value="{{ r.id }}">[{{ r.codigo }}] {{ r.nombre }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="w-20">
+                                    <input type="number" name="cantidad" value="1" min="1"
+                                           class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white focus:border-[#CC0000] outline-none text-center">
+                                </div>
+                                <button type="submit"
+                                        class="px-4 py-2 bg-[#CC0000] text-white rounded-lg text-sm font-medium hover:bg-[#990000] transition-all duration-200">
+                                    +
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    {% endfor %}
                     {% else %}
-                    <p class="text-center py-6 text-[#64748B] dark:text-slate-400 text-sm">Sin repuestos asignados</p>
+                    <div class="px-6 py-4 text-sm text-[#64748B] dark:text-slate-400 text-center">Sin catálogos para este modelo</div>
                     {% endif %}
-                    {% endwith %}
-
-                    <form method="POST" action="{% url 'agregar_item_catalogo' catalogo.id %}" class="flex gap-3 items-end pt-4 border-t border-slate-100 dark:border-slate-700">
-                        {% csrf_token %}
-                        <div class="flex-1">
-                            <label class="block text-xs font-medium text-[#64748B] dark:text-slate-400 mb-1">Agregar Repuesto</label>
-                            <select name="repuesto_id"
-                                    class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none">
-                                <option value="">Seleccionar repuesto...</option>
-                                {% for r in repuestos %}
-                                <option value="{{ r.id }}">[{{ r.codigo }}] {{ r.nombre }} - {{ r.get_tipo_display }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="w-24">
-                            <label class="block text-xs font-medium text-[#64748B] dark:text-slate-400 mb-1">Cantidad</label>
-                            <input type="number" name="cantidad" value="1" min="1"
-                                   class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none text-center">
-                        </div>
-                        <button type="submit"
-                                class="px-5 py-3 bg-[#CC0000] text-white rounded-xl font-medium hover:bg-[#990000] transition-all duration-200">
-                            Agregar
-                        </button>
-                    </form>
                 </div>
             </div>
+            {% endwith %}
             {% empty %}
             <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-12 text-center">
                 <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-50 dark:bg-slate-700 flex items-center justify-center">
@@ -264,11 +297,25 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                     </svg>
                 </div>
-                <p class="text-[#64748B] dark:text-slate-300 font-medium">No hay catálogos aún</p>
-                <p class="text-sm text-slate-400 dark:text-slate-500 mt-1">Crea un catálogo seleccionando modelo y tipo de mantención</p>
+                <p class="text-[#64748B] dark:text-slate-300 font-medium">No hay modelos registrados</p>
+                <p class="text-sm text-slate-400 dark:text-slate-500 mt-1">Crea modelos desde la sección Modelos</p>
             </div>
             {% endfor %}
         </div>
     </main>
 </div>
+
+<script>
+function toggleModelo(id, btn) {
+    const div = document.getElementById(id);
+    const icon = btn.querySelector('svg:last-child');
+    if (div.classList.contains('hidden')) {
+        div.classList.remove('hidden');
+        icon.classList.add('rotate-180');
+    } else {
+        div.classList.add('hidden');
+        icon.classList.remove('rotate-180');
+    }
+}
+</script>
 {% endblock %}

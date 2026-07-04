@@ -453,14 +453,14 @@ def eliminar_repuesto(request, repuesto_id):
 @login_required
 @_mecanico_required
 def listar_catalogos(request):
-    modelos = ModeloTractor.objects.all()
+    modelos = ModeloTractor.objects.prefetch_related(
+        "catalogos__items__repuesto"
+    ).all()
     repuestos = Repuesto.objects.all()
-    catalogos = CatalogoRepuestos.objects.prefetch_related("items__repuesto").all()
     mecanico = Mecanico.objects.filter(email=request.user.email).first()
     return render(request, "mecanico/gestionar_catalogos.html", {
         "modelos": modelos,
         "repuestos": repuestos,
-        "catalogos": catalogos,
         "mecanico": mecanico,
         "tipos_mantencion": CatalogoRepuestos.TIPOS_MANTENCION,
     })
