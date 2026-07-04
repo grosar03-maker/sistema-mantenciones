@@ -60,7 +60,7 @@ class Tractor(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     numero_serie = models.CharField(max_length=100, unique=True)
     modelo = models.ForeignKey(
-        ModeloTractor, on_delete=models.CASCADE, related_name="tractores"
+        ModeloTractor, on_delete=models.SET_NULL, null=True, blank=True, related_name="tractores"
     )
     propietario = models.ForeignKey(
         Cliente, on_delete=models.CASCADE, related_name="tractores"
@@ -73,7 +73,8 @@ class Tractor(models.Model):
         db_table = "tractores"
 
     def __str__(self) -> str:
-        return f"{self.modelo} - S/N: {self.numero_serie}"
+        nombre = self.modelo if self.modelo else "(Modelo eliminado)"
+        return f"{nombre} - S/N: {self.numero_serie}"
 
 
 class Repuesto(models.Model):

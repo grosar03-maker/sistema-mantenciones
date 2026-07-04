@@ -337,7 +337,7 @@ function cerrarModalEliminar() {
                                     <svg class="w-4 h-4 text-[#64748B] dark:text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                                     </svg>
-                                    <span class="text-sm font-medium truncate">{{ orden.tractor.modelo.nombre }}</span>
+                                    <span class="text-sm font-medium truncate">{{ orden.tractor.modelo.nombre|default:"(Modelo eliminado)" }}</span>
                                 </div>
                                 <div class="flex items-center gap-2 text-[#64748B] dark:text-slate-400">
                                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -402,7 +402,7 @@ function cerrarModalEliminar() {
                                     </svg>
                                 </div>
                                 <div>
-                                    <p class="font-medium text-[#0F172A] dark:text-white">{{ orden.tractor.modelo.nombre }} - {{ orden.cliente.nombre }}</p>
+                                    <p class="font-medium text-[#0F172A] dark:text-white">{{ orden.tractor.modelo.nombre|default:"(Modelo eliminado)" }} - {{ orden.cliente.nombre }}</p>
                                     <p class="text-sm text-[#64748B] dark:text-slate-400">Pedido: {{ orden.fecha_solicitud|date:"d/m/Y" }}</p>
                                     {% if orden.fecha_programada %}
                                     <p class="text-sm text-[#64748B] dark:text-slate-400">Programado: {{ orden.fecha_programada|date:"d/m/Y" }}</p>
@@ -446,7 +446,7 @@ function cerrarModalEliminar() {
                                         </svg>
                                     </div>
                                     <div>
-                                        <p class="font-medium text-[#0F172A] dark:text-white">{{ orden.tractor.modelo.nombre }} - {{ orden.cliente.nombre }}</p>
+                                        <p class="font-medium text-[#0F172A] dark:text-white">{{ orden.tractor.modelo.nombre|default:"(Modelo eliminado)" }} - {{ orden.cliente.nombre }}</p>
                                         <p class="text-sm text-[#64748B] dark:text-slate-400">Mecánico: {{ orden.mecanico_asignado.nombre|default:"Sin asignar" }}</p>
                                         <p class="text-sm text-[#64748B] dark:text-slate-400">Pedido: {{ orden.fecha_solicitud|date:"d/m/Y" }}</p>
                                         {% if orden.fecha_programada %}
