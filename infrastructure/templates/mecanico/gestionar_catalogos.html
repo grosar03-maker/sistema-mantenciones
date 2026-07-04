@@ -158,7 +158,7 @@
             {% for modelo in modelos %}
             {% with total_cat=modelo.catalogos.count %}
             <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden mb-4">
-                <div class="px-6 py-4">
+                <div class="flex items-center px-6 py-4">
                     <button type="button"
                         onclick="toggleModelo('modelo-{{ forloop.counter }}', this)"
                         class="flex items-center justify-between flex-1 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-200 text-left">
