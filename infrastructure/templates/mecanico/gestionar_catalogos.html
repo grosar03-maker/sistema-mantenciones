@@ -130,10 +130,10 @@
                         <div class="flex-1">
                             <label class="block text-xs font-medium text-[#64748B] dark:text-slate-400 mb-1">Modelo</label>
                             <select name="modelo_id" required
-                                    class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white focus:border-[#CC0000] outline-none">
+                                    class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none">
                                  <option value="">Seleccionar modelo...</option>
                                 {% for m in modelos %}
-                                <option value="{{ m.id }}" class="py-1">{{ m.marca }} &mdash; {{ m.nombre }}</option>
+                                <option value="{{ m.id }}">{{ m.marca }} {{ m.nombre }}</option>
                                 {% endfor %}
                             </select>
                         </div>
