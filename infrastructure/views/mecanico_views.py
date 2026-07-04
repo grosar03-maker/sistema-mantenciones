@@ -332,6 +332,17 @@ def lista_clientes(request):
     })
 
 
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def eliminar_cliente(request, cliente_id):
+    cliente = get_object_or_404(Cliente, id=cliente_id)
+    ref = str(cliente)
+    cliente.delete()
+    messages.success(request, f"Cliente {ref} eliminado")
+    return redirect("lista_clientes")
+
+
 # ─── Catálogo CRUD ────────────────────────────────────────────────
 
 @login_required
