@@ -343,6 +343,34 @@ def eliminar_cliente(request, cliente_id):
     return redirect("lista_clientes")
 
 
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def eliminar_clientes_masivo(request):
+    ids = request.POST.getlist("cliente_ids")
+    if not ids:
+        messages.warning(request, "No seleccionaste ningún cliente")
+        return redirect("lista_clientes")
+    count = Cliente.objects.filter(id__in=ids).count()
+    Cliente.objects.filter(id__in=ids).delete()
+    messages.success(request, f"{count} cliente(s) eliminado(s)")
+    return redirect("lista_clientes")
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def eliminar_modelos_masivo(request):
+    ids = request.POST.getlist("modelo_ids")
+    if not ids:
+        messages.warning(request, "No seleccionaste ningún modelo")
+        return redirect("listar_catalogos")
+    count = ModeloTractor.objects.filter(id__in=ids).count()
+    ModeloTractor.objects.filter(id__in=ids).delete()
+    messages.success(request, f"{count} modelo(s) eliminado(s)")
+    return redirect("listar_catalogos")
+
+
 # ─── Catálogo CRUD ────────────────────────────────────────────────
 
 @login_required

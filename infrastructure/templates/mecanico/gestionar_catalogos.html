@@ -118,6 +118,13 @@
                     <h1 class="text-2xl font-bold text-[#0F172A] dark:text-white">Catálogos por Mantención</h1>
                     <p class="text-[#64748B] dark:text-slate-400 mt-1">Selecciona un modelo para ver sus mantenciones</p>
                 </div>
+                <button type="button" id="btnEliminarModelos" onclick="toggleModoEliminar()"
+                        class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 border border-red-200 dark:border-red-800 text-sm font-medium transition-colors shrink-0">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    Eliminar Modelos
+                </button>
             </div>
 
             <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden mb-8">
@@ -155,18 +162,14 @@
                 </form>
             </div>
 
+            <form id="formEliminarModelos" method="POST" action="{% url 'eliminar_modelos_masivo' %}">
+                {% csrf_token %}
             {% for modelo in modelos %}
             {% with total_cat=modelo.catalogos.count %}
             <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden mb-4">
                 <div class="flex items-center gap-2 px-6 py-4">
-                    <button type="button" onclick="eliminarModelo('{{ modelo.id }}', '{{ modelo.marca|escapejs }} {{ modelo.nombre|escapejs }}')"
-                            class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 border border-red-200 dark:border-red-800 text-xs font-medium transition-colors shrink-0"
-                            title="Eliminar modelo y sus catálogos">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                        </svg>
-                        Eliminar
-                    </button>
+                    <input type="checkbox" name="modelo_ids" value="{{ modelo.id }}"
+                           class="modelo-checkbox w-4 h-4 rounded border-slate-300 text-red-600 focus:ring-red-500 hidden">
                     <button type="button"
                         onclick="toggleModelo('modelo-{{ forloop.counter }}', this)"
                         class="flex items-center justify-between flex-1 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-200 text-left">
@@ -311,6 +314,24 @@
                 <p class="text-sm text-slate-400 dark:text-slate-500 mt-1">Crea modelos desde la sección Modelos</p>
             </div>
             {% endfor %}
+            </form>
+
+            <div id="barraEliminarModelos" class="fixed bottom-0 left-64 right-0 bg-red-50 dark:bg-red-900/30 border-t border-red-200 dark:border-red-800 px-8 py-4 hidden items-center justify-between z-50">
+                <span class="text-sm font-medium text-red-700 dark:text-red-300">
+                    <span id="seleccionadosModelos">0</span> modelo(s) seleccionados
+                </span>
+                <div class="flex gap-3">
+                    <button type="button" onclick="toggleModoEliminar()"
+                            class="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 text-sm font-medium text-[#64748B] dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="submit" form="formEliminarModelos"
+                            class="px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors"
+                            onclick="return confirm('¿Eliminar los modelos seleccionados y todos sus catálogos? Los tractores perderán la referencia al modelo.')">
+                        Eliminar seleccionados
+                    </button>
+                </div>
+            </div>
         </div>
     </main>
 </div>
@@ -327,18 +348,30 @@ function toggleModelo(id, btn) {
         icon.classList.remove('rotate-180');
     }
 }
-function eliminarModelo(id, nombre) {
-    if (!confirm('¿Eliminar ' + nombre + ' y todos sus catálogos? Los tractores existentes perderán la referencia al modelo.')) return;
-    const f = document.createElement('form');
-    f.method = 'POST';
-    f.action = '/mecanico/modelos/' + id + '/eliminar/';
-    const csrf = document.createElement('input');
-    csrf.type = 'hidden';
-    csrf.name = 'csrfmiddlewaretoken';
-    csrf.value = '{{ csrf_token }}';
-    f.appendChild(csrf);
-    document.body.appendChild(f);
-    f.submit();
+function toggleModoEliminar() {
+    const checkboxes = document.querySelectorAll('.modelo-checkbox');
+    const barra = document.getElementById('barraEliminarModelos');
+    const btn = document.getElementById('btnEliminarModelos');
+    const showing = !checkboxes[0]?.classList.contains('hidden');
+    checkboxes.forEach(cb => {
+        cb.classList.toggle('hidden');
+        cb.checked = false;
+    });
+    if (showing) {
+        barra.classList.add('hidden');
+        barra.classList.remove('flex');
+    } else {
+        barra.classList.remove('hidden');
+        barra.classList.add('flex');
+    }
+    actualizarSeleccionModelos();
 }
+function actualizarSeleccionModelos() {
+    const checks = document.querySelectorAll('.modelo-checkbox:checked');
+    document.getElementById('seleccionadosModelos').textContent = checks.length;
+}
+document.querySelectorAll('.modelo-checkbox').forEach(cb => {
+    cb.addEventListener('change', actualizarSeleccionModelos);
+});
 </script>
 {% endblock %}
