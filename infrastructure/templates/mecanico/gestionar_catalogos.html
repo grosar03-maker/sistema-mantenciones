@@ -314,8 +314,6 @@
                 <p class="text-sm text-slate-400 dark:text-slate-500 mt-1">Crea modelos desde la sección Modelos</p>
             </div>
             {% endfor %}
-            </form>
-
             <div id="barraEliminarModelos" class="fixed bottom-0 left-64 right-0 bg-red-50 dark:bg-red-900/30 border-t border-red-200 dark:border-red-800 px-8 py-4 hidden items-center justify-between z-50">
                 <span class="text-sm font-medium text-red-700 dark:text-red-300">
                     <span id="seleccionadosModelos">0</span> modelo(s) seleccionados
@@ -325,13 +323,14 @@
                             class="px-4 py-2 rounded-lg border border-slate-200 dark:border-slate-600 text-sm font-medium text-[#64748B] dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                         Cancelar
                     </button>
-                    <button type="submit" form="formEliminarModelos"
+                    <button type="submit"
                             class="px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700 transition-colors"
                             onclick="return confirm('¿Eliminar los modelos seleccionados y todos sus catálogos? Los tractores perderán la referencia al modelo.')">
                         Eliminar seleccionados
                     </button>
                 </div>
             </div>
+            </form>
         </div>
     </main>
 </div>
