@@ -5,14 +5,25 @@
 {{ block.super }}
 <style>
 [data-mechanic-bg] {
-    --bg-overlay: rgba(248,250,252,0.75);
-    background-image: linear-gradient(var(--bg-overlay), var(--bg-overlay)), url("{% static 'images/fondo_mecanico.jpg' %}");
+    background-image: url("{% static 'images/fondo_mecanico.jpg' %}");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
+    position: relative;
 }
-html.dark [data-mechanic-bg] {
-    --bg-overlay: rgba(15,23,42,0.82);
+[data-mechanic-bg]::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(248,250,252,0.65);
+    backdrop-filter: blur(2px);
+}
+html.dark [data-mechanic-bg]::before {
+    background: rgba(15,23,42,0.75);
+}
+[data-mechanic-bg] > * {
+    position: relative;
+    z-index: 1;
 }
 </style>
 {% endblock %}
