@@ -611,6 +611,8 @@ def detalle_mecanico(request):
                 mecanico.email = email
                 mecanico.telefono = telefono
                 mecanico.save()
+                request.user.email = email
+                request.user.save()
                 messages.success(request, "Datos actualizados correctamente")
         else:
             messages.error(request, "El correo electrónico es obligatorio")
