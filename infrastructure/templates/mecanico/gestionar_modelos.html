@@ -181,7 +181,7 @@
                         </svg>
                         {% endif %}
                     </div>
-                    <h2 class="text-xl font-bold text-[#0F172A] dark:text-white">{{ tipo_label }}s</h2>
+                    <h2 class="text-xl font-bold text-[#0F172A] dark:text-white">{% if tipo_val == 'tractor' %}Tractores{% else %}Implementos{% endif %}</h2>
                 </div>
 
                 {% for marca, marca_modelos in tipo_grupos.items %}
