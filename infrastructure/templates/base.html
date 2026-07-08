@@ -86,6 +86,18 @@
                 localStorage.setItem('theme', 'dark');
             }
         }
+        document.addEventListener('DOMContentLoaded', function() {
+            var msgs = document.querySelectorAll('.text-green-700.rounded-xl, .text-red-700.rounded-xl, .text-blue-700.rounded-xl');
+            if (msgs.length > 0) {
+                setTimeout(function() {
+                    msgs.forEach(function(el) {
+                        el.style.transition = 'opacity 0.5s ease';
+                        el.style.opacity = '0';
+                        setTimeout(function() { el.remove(); }, 500);
+                    });
+                }, 5000);
+            }
+        });
     </script>
     {% block extra_scripts %}{% endblock %}
 </body>
