@@ -3,6 +3,7 @@ from django.core.mail import send_mail
 
 from domain.entities.orden_mantencion import OrdenMantencion
 from application.ports.servicio_notificacion import ServicioNotificacion
+from infrastructure.models import Mecanico
 
 
 class ServicioNotificacionEmail(ServicioNotificacion):
@@ -65,6 +66,32 @@ class ServicioNotificacionEmail(ServicioNotificacion):
             message=mensaje,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[orden.cliente.email],
+            fail_silently=False,
+        )
+
+    def notificar_nueva_orden_mecanicos(self, orden: OrdenMantencion) -> None:
+        emails = list(Mecanico.objects.values_list("email", flat=True))
+        if not emails:
+            return
+
+        tipo = orden.tipo_mantencion.value if hasattr(orden.tipo_mantencion, "value") else orden.tipo_mantencion
+        asunto = f"Nueva Orden de Mantención - {self._nombre_modelo(orden)}"
+        mensaje = (
+            f"Se ha registrado una nueva orden de mantención.\n\n"
+            f"Cliente: {orden.cliente.nombre}\n"
+            f"Contacto: {orden.cliente.telefono} | {orden.cliente.email}\n"
+            f"Equipo: {self._nombre_modelo(orden)}\n"
+            f"N° Serie: {self._numero_serie(orden)}\n"
+            f"Tipo: {tipo}\n"
+            f"Fecha Solicitud: {orden.fecha_solicitud.strftime('%d/%m/%Y %H:%M')}\n\n"
+            f"Ingrese al portal mecánico para revisar y asignar la orden.\n\n"
+            f"Case Mantenciones"
+        )
+        send_mail(
+            subject=asunto,
+            message=mensaje,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=emails,
             fail_silently=False,
         )
 

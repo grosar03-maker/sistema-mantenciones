@@ -58,5 +58,6 @@ class SolicitarMantencion:
 
         self._repo_orden.guardar(orden)
         self._notificador.notificar_confirmacion_cliente(orden)
+        self._notificador.notificar_nueva_orden_mecanicos(orden)
 
         return orden

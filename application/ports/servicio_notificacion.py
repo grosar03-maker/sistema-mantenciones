@@ -13,3 +13,6 @@ class ServicioNotificacion(ABC):
 
     @abstractmethod
     def notificar_reprogramacion_cliente(self, orden: OrdenMantencion, fecha_anterior: str, fecha_nueva: str) -> None: ...
+
+    @abstractmethod
+    def notificar_nueva_orden_mecanicos(self, orden: OrdenMantencion) -> None: ...
