@@ -43,9 +43,14 @@ class Mecanico(models.Model):
 
 
 class ModeloTractor(models.Model):
+    TIPOS = [
+        ("tractor", "Tractor"),
+        ("implemento", "Implemento"),
+    ]
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     nombre = models.CharField(max_length=200)
     marca = models.CharField(max_length=100, default="Case")
+    tipo = models.CharField(max_length=20, choices=TIPOS, default="tractor")
 
     class Meta:
         verbose_name = "Modelo de Tractor"

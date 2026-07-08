@@ -56,7 +56,7 @@ class Command(BaseCommand):
 
                 if modelo_nombre not in modelos_vistos:
                     modelo, _ = ModeloTractor.objects.get_or_create(
-                        nombre=modelo_nombre, defaults={"marca": "Case"}
+                        nombre=modelo_nombre, defaults={"marca": "Case", "tipo": "tractor"}
                     )
                     modelos_vistos[modelo_nombre] = modelo
 

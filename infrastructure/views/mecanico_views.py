@@ -361,11 +361,17 @@ def eliminar_clientes_masivo(request):
 @login_required
 @_mecanico_required
 def listar_modelos(request):
-    modelos = ModeloTractor.objects.all()
+    modelos = ModeloTractor.objects.all().order_by("tipo", "marca", "nombre")
     mecanico = Mecanico.objects.filter(email=request.user.email).first()
+    # Group by tipo then marca
+    grupos = {}
+    for m in modelos:
+        grupos.setdefault(m.tipo, {}).setdefault(m.marca, []).append(m)
     return render(request, "mecanico/gestionar_modelos.html", {
         "modelos": modelos,
+        "grupos": grupos,
         "mecanico": mecanico,
+        "tipos": ModeloTractor.TIPOS,
     })
 
 
@@ -375,10 +381,11 @@ def listar_modelos(request):
 def crear_modelo(request):
     nombre = request.POST.get("nombre", "").strip()
     marca = request.POST.get("marca", "Case").strip()
+    tipo = request.POST.get("tipo", "tractor")
     if not nombre:
         messages.error(request, "El nombre del modelo es obligatorio")
         return redirect("listar_modelos")
-    ModeloTractor.objects.create(nombre=nombre, marca=marca)
+    ModeloTractor.objects.create(nombre=nombre, marca=marca, tipo=tipo)
     messages.success(request, f"Modelo {marca} {nombre} creado")
     return redirect("listar_modelos")
 
@@ -390,11 +397,13 @@ def editar_modelo(request, modelo_id):
     modelo = get_object_or_404(ModeloTractor, id=modelo_id)
     nombre = request.POST.get("nombre", "").strip()
     marca = request.POST.get("marca", "Case").strip()
+    tipo = request.POST.get("tipo", "tractor")
     if not nombre:
         messages.error(request, "El nombre del modelo es obligatorio")
         return redirect("listar_modelos")
     modelo.nombre = nombre
     modelo.marca = marca
+    modelo.tipo = tipo
     modelo.save()
     messages.success(request, f"Modelo actualizado: {marca} {nombre}")
     return redirect("listar_modelos")

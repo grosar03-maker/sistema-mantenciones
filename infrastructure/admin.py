@@ -25,7 +25,8 @@ class MecanicoAdmin(admin.ModelAdmin):
 
 @admin.register(ModeloTractor)
 class ModeloTractorAdmin(admin.ModelAdmin):
-    list_display = ("marca", "nombre")
+    list_display = ("marca", "nombre", "tipo")
+    list_filter = ("tipo", "marca")
     search_fields = ("nombre",)
 
 
