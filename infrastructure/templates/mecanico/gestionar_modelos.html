@@ -2,33 +2,6 @@
 {% load static %}
 {% load dict_filters %}
 
-{% block extra_head %}
-{{ block.super }}
-<style>
-[data-mechanic-bg] {
-    background-image: url("{% static 'images/fondo_mecanico.jpg' %}");
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    position: relative;
-}
-[data-mechanic-bg]::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(248,250,252,0.65);
-    backdrop-filter: blur(2px);
-}
-html.dark [data-mechanic-bg]::before {
-    background: rgba(15,23,42,0.75);
-}
-[data-mechanic-bg] > * {
-    position: relative;
-    z-index: 1;
-}
-</style>
-{% endblock %}
-
 {% block title %}Modelos - Case{% endblock %}
 
 {% block nav %}{% endblock %}
@@ -124,7 +97,7 @@ html.dark [data-mechanic-bg]::before {
         </div>
     </aside>
 
-    <main class="flex-1 overflow-auto" data-mechanic-bg>
+    <main class="flex-1 overflow-auto">
         <div class="p-8">
             {% if messages %}
             <div class="mb-6 space-y-2">
@@ -146,7 +119,7 @@ html.dark [data-mechanic-bg]::before {
                 </div>
             </div>
 
-            <div class="bg-white/85 dark:bg-slate-800/85 backdrop-blur-sm rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden mb-8">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden mb-8">
                 <div class="p-6 border-b border-slate-100 dark:border-slate-700">
                     <h2 class="text-lg font-semibold text-[#0F172A] dark:text-white">Nuevo Modelo</h2>
                 </div>
@@ -181,7 +154,7 @@ html.dark [data-mechanic-bg]::before {
             </div>
 
             {% if not modelos %}
-            <div class="bg-white/85 dark:bg-slate-800/85 backdrop-blur-sm rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-12 text-center">
+            <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-12 text-center">
                 <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-50 dark:bg-slate-700 flex items-center justify-center">
                     <svg class="w-8 h-8 text-slate-300 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -212,7 +185,7 @@ html.dark [data-mechanic-bg]::before {
                 </div>
 
                 {% for marca, marca_modelos in tipo_grupos.items %}
-                <div class="bg-white/85 dark:bg-slate-800/85 backdrop-blur-sm rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden mb-4">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden mb-4">
                     <div class="flex items-center px-6 py-4">
                         <button type="button"
                             onclick="toggleMarca('marca-{{ tipo_val }}-{{ forloop.parentloop.counter0 }}-{{ forloop.counter0 }}', this)"

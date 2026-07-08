@@ -1,33 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block extra_head %}
-{{ block.super }}
-<style>
-[data-mechanic-bg] {
-    background-image: url("{% static 'images/fondo_mecanico.jpg' %}");
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    position: relative;
-}
-[data-mechanic-bg]::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: rgba(248,250,252,0.65);
-    backdrop-filter: blur(2px);
-}
-html.dark [data-mechanic-bg]::before {
-    background: rgba(15,23,42,0.75);
-}
-[data-mechanic-bg] > * {
-    position: relative;
-    z-index: 1;
-}
-</style>
-{% endblock %}
-
 {% block title %}Clientes - Case{% endblock %}
 
 {% block nav %}{% endblock %}
@@ -123,7 +96,7 @@ html.dark [data-mechanic-bg]::before {
         </div>
     </aside>
 
-    <main class="flex-1 overflow-auto" data-mechanic-bg>
+    <main class="flex-1 overflow-auto">
         <div class="p-8">
             <div class="mb-6 flex items-center justify-between">
                 <div>
@@ -144,7 +117,7 @@ html.dark [data-mechanic-bg]::before {
                 <div class="space-y-3" id="listaClientes">
                 {% for cliente in clientes %}
                 {% with total_ords=cliente.tractores.all|length %}
-                <div class="bg-white/85 dark:bg-slate-800/85 backdrop-blur-sm rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden cliente-card">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden cliente-card">
                     <div class="flex items-center gap-2 px-6 py-4">
                         <input type="checkbox" name="cliente_ids" value="{{ cliente.id }}"
                                class="cliente-checkbox w-4 h-4 rounded border-slate-300 text-red-600 focus:ring-red-500 hidden">
@@ -250,7 +223,7 @@ html.dark [data-mechanic-bg]::before {
                 </div>
                 {% endwith %}
                 {% empty %}
-                <div class="bg-white/85 dark:bg-slate-800/85 backdrop-blur-sm rounded-2xl border border-slate-100 dark:border-slate-700 p-12 text-center">
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 p-12 text-center">
                     <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-50 dark:bg-slate-700 flex items-center justify-center">
                         <svg class="w-8 h-8 text-slate-300 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
