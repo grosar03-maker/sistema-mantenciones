@@ -258,6 +258,9 @@ def reprogramar_orden(request, orden_id):
     except ValueError:
         messages.error(request, "Formato de fecha inválido")
         return redirect("detalle_orden", orden_id=orden_id)
+    if orden.fecha_programada and nueva_fecha == orden.fecha_programada:
+        messages.warning(request, "La fecha seleccionada es la misma que la actual. No se reprogramó.")
+        return redirect("detalle_orden", orden_id=orden_id)
     fecha_anterior = orden.fecha_programada.strftime("%d/%m/%Y") if orden.fecha_programada else "Sin fecha"
     orden.fecha_programada = nueva_fecha
     orden.save()
