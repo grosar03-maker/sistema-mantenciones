@@ -590,3 +590,32 @@ def eliminar_item_catalogo(request, item_id):
     item.delete()
     messages.success(request, "Repuesto eliminado del catálogo")
     return redirect("listar_catalogos")
+
+
+@login_required
+@_mecanico_required
+def detalle_mecanico(request):
+    mecanico = Mecanico.objects.filter(email=request.user.email).first()
+    if not mecanico:
+        messages.error(request, "No se encontraron datos del mecánico")
+        return redirect("dashboard_mecanico")
+
+    if request.method == "POST":
+        email = request.POST.get("email", "").strip()
+        telefono = request.POST.get("telefono", "").strip()
+        if email:
+            duplicado = Mecanico.objects.filter(email=email).exclude(id=mecanico.id).first()
+            if duplicado:
+                messages.error(request, "El correo electrónico ya está en uso por otro mecánico")
+            else:
+                mecanico.email = email
+                mecanico.telefono = telefono
+                mecanico.save()
+                messages.success(request, "Datos actualizados correctamente")
+        else:
+            messages.error(request, "El correo electrónico es obligatorio")
+        return redirect("detalle_mecanico")
+
+    return render(request, "mecanico/detalle_mecanico.html", {
+        "mecanico": mecanico,
+    })

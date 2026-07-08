@@ -17,6 +17,7 @@ from infrastructure.views.mecanico_views import (
     listar_repuestos, crear_repuesto, editar_repuesto, eliminar_repuesto,
     listar_catalogos, crear_catalogo, eliminar_catalogo,
     agregar_item_catalogo, editar_item_catalogo, eliminar_item_catalogo,
+    detalle_mecanico,
 )
 
 urlpatterns = [
@@ -58,6 +59,7 @@ urlpatterns = [
     path("mecanico/catalogos/<uuid:catalogo_id>/agregar-item/", agregar_item_catalogo, name="agregar_item_catalogo"),
     path("mecanico/items/<uuid:item_id>/editar/", editar_item_catalogo, name="editar_item_catalogo"),
     path("mecanico/items/<uuid:item_id>/eliminar/", eliminar_item_catalogo, name="eliminar_item_catalogo"),
+    path("mecanico/mi-cuenta/", detalle_mecanico, name="detalle_mecanico"),
 ]
 
 if settings.DEBUG:

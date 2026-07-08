@@ -75,7 +75,7 @@
         </nav>
 
         <div class="p-4 border-t border-slate-700">
-            <div class="flex items-center gap-3 px-4 py-3">
+            <a href="{% url 'detalle_mecanico' %}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition-all duration-200">
                 <div class="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center text-white text-sm font-medium uppercase">
                     {{ mecanico.nombre|make_list|first|default:user.username|make_list|first }}
                 </div>
@@ -83,7 +83,7 @@
                     <p class="text-white text-sm font-medium">{{ mecanico.nombre|default:user.get_full_name|default:user.username }}</p>
                     <p class="text-slate-400 text-xs">{{ mecanico.especialidad|default:"Técnico" }}</p>
                 </div>
-            </div>
+            </a>
         </div>
         <div class="px-4 pb-4">
             <a href="{% url 'logout' %}"

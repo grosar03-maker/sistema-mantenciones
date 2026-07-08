@@ -30,6 +30,7 @@ class Mecanico(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     nombre = models.CharField(max_length=200)
     email = models.EmailField(unique=True)
+    telefono = models.CharField(max_length=20, blank=True, default="")
     especialidad = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now_add=True)
 
