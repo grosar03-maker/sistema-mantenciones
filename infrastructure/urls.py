@@ -6,7 +6,7 @@ from django.urls import path
 from infrastructure.views.auth_views import home_view, login_view, logout_view
 from infrastructure.views.cliente_views import (
     registro_cliente, solicitar_mantencion, solicitud_exitosa,
-    buscar_tractor_api, dias_disponibles_api, dashboard_cliente,
+    dias_disponibles_api, dashboard_cliente,
 )
 from infrastructure.views.mecanico_views import (
     dashboard, detalle_orden, lista_ordenes, lista_clientes,
@@ -27,7 +27,6 @@ urlpatterns = [
     path("logout/", logout_view, name="logout"),
     path("cliente/solicitar/", solicitar_mantencion, name="solicitar_mantencion"),
     path("cliente/solicitud/<uuid:orden_id>/", solicitud_exitosa, name="solicitud_exitosa"),
-    path("api/buscar-tractor/", buscar_tractor_api, name="buscar_tractor_api"),
     path("api/dias-disponibles/", dias_disponibles_api, name="dias_disponibles_api"),
     path("mecanico/dashboard/", dashboard, name="dashboard_mecanico"),
     path("mecanico/orden/<uuid:orden_id>/", detalle_orden, name="detalle_orden"),

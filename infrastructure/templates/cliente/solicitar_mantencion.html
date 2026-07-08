@@ -14,7 +14,7 @@
                 </svg>
             </div>
             <h1 class="text-3xl font-bold text-[#0F172A] dark:text-white">Solicitud de Mantención</h1>
-            <p class="mt-2 text-[#64748B] dark:text-slate-400 text-lg">Ingrese los datos de su tractor Case para generar la orden</p>
+            <p class="mt-2 text-[#64748B] dark:text-slate-400 text-lg">Seleccione su modelo y número de serie</p>
         </div>
 
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 border border-slate-100 dark:border-slate-700 overflow-hidden">
@@ -23,7 +23,7 @@
                     <div class="flex items-center">
                         <div class="step-indicator flex items-center" data-step="1">
                             <div class="w-10 h-10 rounded-full bg-[#CC0000] text-white flex items-center justify-center text-sm font-semibold shadow-md shadow-red-200">1</div>
-                            <span class="ml-3 text-sm font-medium text-[#0F172A] dark:text-white">Identificar Tractor</span>
+                            <span class="ml-3 text-sm font-medium text-[#0F172A] dark:text-white">Identificar Equipo</span>
                         </div>
                         <div class="w-16 h-0.5 mx-4 bg-slate-200 dark:bg-slate-600 step-line" data-step="1"></div>
                         <div class="step-indicator flex items-center" data-step="2">
@@ -48,61 +48,60 @@
 
                     <div id="step-1" class="step-content">
                         <div class="text-center mb-8">
-                            <h2 class="text-xl font-semibold text-[#0F172A] dark:text-white">Ingrese el número de serie de su tractor</h2>
-                            <p class="text-[#64748B] dark:text-slate-400 mt-1">Lo buscaremos en nuestra base de datos para identificar el modelo exacto</p>
+                            <h2 class="text-xl font-semibold text-[#0F172A] dark:text-white">Identifique su equipo</h2>
+                            <p class="text-[#64748B] dark:text-slate-400 mt-1">Seleccione la marca, el modelo y opcionalmente ingrese el número de serie</p>
                         </div>
 
-                        <div class="max-w-md mx-auto">
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                    <svg class="w-5 h-5 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                    </svg>
-                                </div>
-                                <input type="text" id="numero_serie" name="numero_serie"
-                                    class="w-full pl-12 pr-4 py-4 text-lg border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:border-[#CC0000] focus:ring-4 focus:ring-red-50 outline-none transition-all duration-200 bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
-                                    placeholder="Ej: CASE-MAGNUM-7250-2024"
-                                    autocomplete="off">
+                        <div class="max-w-md mx-auto space-y-5">
+                            <div>
+                                <label class="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Marca</label>
+                                <select id="marca-select" name="marca"
+                                    class="w-full px-4 py-3.5 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:border-[#CC0000] focus:ring-4 focus:ring-red-50 outline-none transition-all duration-200 bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white">
+                                    <option value="">Seleccione una marca</option>
+                                    {% for marca in marcas %}
+                                    <option value="{{ marca }}">{{ marca }}</option>
+                                    {% endfor %}
+                                </select>
                             </div>
 
-                            <div id="search-status" class="mt-4"></div>
-
-                            <div id="skeleton-loader" class="hidden mt-6 space-y-3 animate-pulse">
-                                <div class="h-4 bg-slate-200 dark:bg-slate-600 rounded w-3/4"></div>
-                                <div class="h-4 bg-slate-200 dark:bg-slate-600 rounded w-1/2"></div>
-                                <div class="h-10 bg-slate-200 dark:bg-slate-600 rounded-xl w-full"></div>
+                            <div>
+                                <label class="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Modelo</label>
+                                <select id="modelo-select" name="modelo_id"
+                                    class="w-full px-4 py-3.5 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:border-[#CC0000] focus:ring-4 focus:ring-red-50 outline-none transition-all duration-200 bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                                    disabled>
+                                    <option value="">Primero seleccione una marca</option>
+                                </select>
                             </div>
 
-                            <div id="tractor-info" class="hidden mt-6 p-5 bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-xl">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-800 flex items-center justify-center">
-                                        <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            <div>
+                                <label class="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">
+                                    Número de serie <span class="text-[#64748B] dark:text-slate-400 font-normal">(opcional)</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="w-5 h-5 text-slate-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                         </svg>
                                     </div>
-                                    <div>
-                                        <p class="font-semibold text-green-800 dark:text-green-200" id="modelo-nombre"></p>
-                                        <p class="text-sm text-green-600 dark:text-green-400" id="modelo-marca"></p>
-                                    </div>
+                                    <input type="text" id="numero_serie_cliente" name="numero_serie_cliente"
+                                        class="w-full pl-12 pr-4 py-3.5 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:border-[#CC0000] focus:ring-4 focus:ring-red-50 outline-none transition-all duration-200 bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
+                                        placeholder="Ej: CASE-MAGNUM-7250-2024"
+                                        autocomplete="off">
                                 </div>
-                                <input type="hidden" id="cliente_id" name="cliente_id">
-                                <input type="hidden" id="tractor_id" name="tractor_id">
                             </div>
 
                             <button type="button" id="btn-continuar-1"
-                                class="hidden w-full mt-6 bg-[#CC0000] text-white py-4 px-6 rounded-xl font-semibold hover:bg-[#990000] transition-all duration-200 shadow-lg shadow-red-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="w-full mt-6 bg-[#CC0000] text-white py-4 px-6 rounded-xl font-semibold hover:bg-[#990000] transition-all duration-200 shadow-lg shadow-red-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                 disabled>
                                 Continuar
                             </button>
-
-                            <div id="search-error" class="hidden mt-4 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-sm"></div>
                         </div>
                     </div>
 
                     <div id="step-2" class="step-content hidden">
                         <div class="text-center mb-8">
                             <h2 class="text-xl font-semibold text-[#0F172A] dark:text-white">Seleccione el tipo de mantención</h2>
-                            <p class="text-[#64748B] dark:text-slate-400 mt-1">Según las horas de operación de su tractor</p>
+                            <p class="text-[#64748B] dark:text-slate-400 mt-1">Según las horas de operación de su equipo</p>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto">
@@ -267,7 +266,7 @@
 
                         <div class="max-w-lg mx-auto space-y-4">
                             <div class="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-5 border border-slate-100 dark:border-slate-600">
-                                <p class="text-xs font-medium uppercase tracking-wider text-[#64748B] dark:text-slate-400 mb-1">Tractor</p>
+                                <p class="text-xs font-medium uppercase tracking-wider text-[#64748B] dark:text-slate-400 mb-1">Equipo</p>
                                 <p class="font-semibold text-[#0F172A] dark:text-white" id="resumen-modelo"></p>
                                 <p class="text-sm text-[#64748B] dark:text-slate-400" id="resumen-serie"></p>
                             </div>
@@ -315,15 +314,19 @@
 
 {% block extra_scripts %}
 <script>
-    let searchTimeout = null;
-    let tractorData = {};
-    let diasOcupados = new Set();
-    let mesActual = new Date();
-    mesActual.setDate(1);
+    const modelosData = [
+        {% for m in modelos %}
+        { id: "{{ m.id }}", nombre: "{{ m.nombre }}", marca: "{{ m.marca }}" },
+        {% endfor %}
+    ];
 
     const $ = (sel) => document.querySelector(sel);
     const stepContents = ['step-1', 'step-2', 'step-3', 'step-4'];
     let currentStep = 1;
+    let selectedModelo = null;
+    let diasOcupados = new Set();
+    let mesActual = new Date();
+    mesActual.setDate(1);
 
     function showStep(step) {
         stepContents.forEach((id, i) => {
@@ -363,59 +366,33 @@
         currentStep = step;
     }
 
-    function handleTractorSearch() {
-        const q = document.getElementById('numero_serie').value.trim();
-        const status = document.getElementById('search-status');
-        const skeleton = document.getElementById('skeleton-loader');
-        const info = document.getElementById('tractor-info');
-        const error = document.getElementById('search-error');
-        const btn = document.getElementById('btn-continuar-1');
+    const marcaSelect = document.getElementById('marca-select');
+    const modeloSelect = document.getElementById('modelo-select');
+    const btnContinue1 = document.getElementById('btn-continuar-1');
 
-        info.classList.add('hidden');
-        error.classList.add('hidden');
-        btn.classList.add('hidden');
+    marcaSelect.addEventListener('change', function() {
+        const marca = this.value;
+        modeloSelect.innerHTML = '<option value="">Seleccione un modelo</option>';
+        modeloSelect.disabled = !marca;
+        btnContinue1.disabled = true;
+        selectedModelo = null;
 
-        if (q.length < 4) {
-            status.innerHTML = '<p class="text-sm text-slate-400">Ingrese al menos 4 caracteres</p>';
-            return;
+        if (marca) {
+            const filtered = modelosData.filter(m => m.marca === marca);
+            filtered.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.id;
+                opt.textContent = m.nombre;
+                modeloSelect.appendChild(opt);
+            });
         }
+    });
 
-        skeleton.classList.remove('hidden');
-        status.innerHTML = '<p class="text-sm text-slate-500"><span class="animate-pulse">Buscando tractor...</span></p>';
-
-        if (searchTimeout) clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            fetch(`/api/buscar-tractor/?q=${encodeURIComponent(q)}`)
-                .then(r => r.json())
-                .then(data => {
-                    skeleton.classList.add('hidden');
-                    if (data.encontrado) {
-                        document.getElementById('modelo-nombre').textContent = `${data.marca} ${data.modelo}`;
-                        document.getElementById('modelo-marca').textContent = `S/N: ${q}`;
-                        document.getElementById('cliente_id').value = data.cliente_id;
-                        document.getElementById('tractor_id').value = data.tractor_id;
-                        tractorData = data;
-                        info.classList.remove('hidden');
-                        btn.classList.remove('hidden');
-                        btn.disabled = false;
-                        status.innerHTML = '';
-                    } else {
-                        error.textContent = data.error || 'Tractor no encontrado. Verifique el número de serie.';
-                        error.classList.remove('hidden');
-                        btn.classList.add('hidden');
-                        status.innerHTML = '';
-                    }
-                })
-                .catch(() => {
-                    skeleton.classList.add('hidden');
-                    error.textContent = 'Error de conexión. Intente nuevamente.';
-                    error.classList.remove('hidden');
-                    status.innerHTML = '';
-                });
-        }, 400);
-    }
-
-    document.getElementById('numero_serie').addEventListener('input', handleTractorSearch);
+    modeloSelect.addEventListener('change', function() {
+        const id = this.value;
+        selectedModelo = id ? modelosData.find(m => m.id === id) : null;
+        btnContinue1.disabled = !id;
+    });
 
     document.getElementById('btn-continuar-1').addEventListener('click', () => showStep(2));
     document.getElementById('btn-atras-2').addEventListener('click', () => showStep(1));
@@ -464,8 +441,10 @@
             'reparacion_general': 'Reparación General'
         };
         const tipo = document.querySelector('input[name="tipo_mantencion"]:checked');
-        document.getElementById('resumen-modelo').textContent = `${tractorData.marca || 'Case'} ${tractorData.modelo || ''}`;
-        document.getElementById('resumen-serie').textContent = document.getElementById('numero_serie').value;
+        document.getElementById('resumen-modelo').textContent =
+            selectedModelo ? `${selectedModelo.marca} ${selectedModelo.nombre}` : '';
+        const serie = document.getElementById('numero_serie_cliente').value.trim();
+        document.getElementById('resumen-serie').textContent = serie ? `S/N: ${serie}` : 'Sin número de serie';
         document.getElementById('resumen-tipo').textContent = labels[tipo.value] || tipo.value;
         const fecha = document.getElementById('fecha_programada').value;
         const parts = fecha.split('-');

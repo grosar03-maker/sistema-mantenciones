@@ -166,8 +166,8 @@
                                     <span class="text-sm font-medium text-[#0F172A] dark:text-white">{{ orden.cliente.nombre }}</span>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="text-sm text-[#0F172A] dark:text-white">{{ orden.tractor.modelo.nombre|default:"(Modelo eliminado)" }}</span>
-                                    <span class="text-xs text-[#64748B] dark:text-slate-400 block">S/N: {{ orden.tractor.numero_serie }}</span>
+                                    <span class="text-sm text-[#0F172A] dark:text-white">{% firstof orden.modelo.nombre orden.tractor.modelo.nombre "(Modelo eliminado)" %}</span>
+                                    <span class="text-xs text-[#64748B] dark:text-slate-400 block">S/N: {% firstof orden.numero_serie_cliente orden.tractor.numero_serie "-" %}</span>
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium

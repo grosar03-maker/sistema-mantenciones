@@ -4,6 +4,7 @@ from datetime import date, datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
 
@@ -30,7 +31,7 @@ def _mecanico_required(view):
 @_mecanico_required
 def dashboard(request):
     ordenes = OrdenMantencion.objects.select_related(
-        "cliente", "tractor__modelo", "mecanico_asignado"
+        "cliente", "tractor__modelo", "mecanico_asignado", "modelo"
     ).prefetch_related("repuestos").all()
 
     mecanico = Mecanico.objects.filter(email=request.user.email).first()
@@ -67,7 +68,7 @@ def dashboard(request):
 def detalle_orden(request, orden_id):
     orden = get_object_or_404(
         OrdenMantencion.objects.select_related(
-            "cliente", "tractor__modelo", "tractor__propietario", "mecanico_asignado"
+            "cliente", "tractor__modelo", "tractor__propietario", "mecanico_asignado", "modelo"
         ).prefetch_related("repuestos", "imagenes", "notas_internas__mecanico"),
         id=orden_id,
     )
@@ -105,7 +106,7 @@ def detalle_orden(request, orden_id):
 @_mecanico_required
 def lista_ordenes(request):
     qs = OrdenMantencion.objects.select_related(
-        "cliente", "tractor__modelo", "mecanico_asignado"
+        "cliente", "tractor__modelo", "mecanico_asignado", "modelo"
     ).prefetch_related("repuestos").all()
 
     numero_serie = request.GET.get("numero_serie", "").strip()
@@ -115,7 +116,10 @@ def lista_ordenes(request):
     estado = request.GET.get("estado", "").strip()
 
     if numero_serie:
-        qs = qs.filter(tractor__numero_serie__icontains=numero_serie)
+        qs = qs.filter(
+            Q(tractor__numero_serie__icontains=numero_serie)
+            | Q(numero_serie_cliente__icontains=numero_serie)
+        )
     if cliente_nombre:
         qs = qs.filter(cliente__nombre__icontains=cliente_nombre)
     if fecha_desde:

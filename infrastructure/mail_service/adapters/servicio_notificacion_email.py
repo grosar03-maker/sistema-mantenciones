@@ -7,8 +7,22 @@ from application.ports.servicio_notificacion import ServicioNotificacion
 
 class ServicioNotificacionEmail(ServicioNotificacion):
 
+    def _nombre_modelo(self, orden: OrdenMantencion) -> str:
+        if orden.modelo:
+            return f"{orden.modelo.marca} {orden.modelo.nombre}"
+        if orden.tractor and orden.tractor.modelo:
+            return f"{orden.tractor.modelo.marca} {orden.tractor.modelo.nombre}"
+        return "No especificado"
+
+    def _numero_serie(self, orden: OrdenMantencion) -> str:
+        if orden.numero_serie_cliente:
+            return orden.numero_serie_cliente
+        if orden.tractor:
+            return orden.tractor.numero_serie
+        return "No especificado"
+
     def notificar_confirmacion_cliente(self, orden: OrdenMantencion) -> None:
-        asunto = f"Confirmación de Orden de Mantención - {orden.tractor.modelo.nombre}"
+        asunto = f"Confirmación de Orden de Mantención - {self._nombre_modelo(orden)}"
         mensaje = self._plantilla_cliente(orden)
         send_mail(
             subject=asunto,
@@ -22,7 +36,7 @@ class ServicioNotificacionEmail(ServicioNotificacion):
         if not orden.mecanico_asignado:
             return
 
-        asunto = f"Nueva Orden Asignada - {orden.tractor.numero_serie}"
+        asunto = f"Nueva Orden Asignada - {self._numero_serie(orden)}"
         mensaje = self._plantilla_mecanico(orden)
         send_mail(
             subject=asunto,
@@ -34,12 +48,12 @@ class ServicioNotificacionEmail(ServicioNotificacion):
 
     def notificar_reprogramacion_cliente(self, orden: OrdenMantencion, fecha_anterior: str, fecha_nueva: str) -> None:
         tipo = orden.tipo_mantencion.value if hasattr(orden.tipo_mantencion, "value") else orden.tipo_mantencion
-        asunto = f"Reprogramación de Orden - {orden.tractor.modelo.nombre}"
+        asunto = f"Reprogramación de Orden - {self._nombre_modelo(orden)}"
         mensaje = (
             f"Estimado(a) {orden.cliente.nombre},\n\n"
             f"Le informamos que la fecha de su orden de mantención ha sido reprogramada.\n\n"
-            f"Tractor: {orden.tractor.modelo.nombre}\n"
-            f"N° Serie: {orden.tractor.numero_serie}\n"
+            f"Equipo: {self._nombre_modelo(orden)}\n"
+            f"N° Serie: {self._numero_serie(orden)}\n"
             f"Tipo: {tipo}\n"
             f"Fecha anterior: {fecha_anterior}\n"
             f"Nueva fecha: {fecha_nueva}\n\n"
@@ -58,8 +72,8 @@ class ServicioNotificacionEmail(ServicioNotificacion):
         return (
             f"Estimado(a) {orden.cliente.nombre},\n\n"
             f"Su orden de mantención ha sido registrada exitosamente.\n\n"
-            f"Tractor: {orden.tractor.modelo.nombre}\n"
-            f"N° Serie: {orden.tractor.numero_serie}\n"
+            f"Equipo: {self._nombre_modelo(orden)}\n"
+            f"N° Serie: {self._numero_serie(orden)}\n"
             f"Tipo: {orden.tipo_mantencion.value}\n"
             f"Estado: {orden.estado.value}\n\n"
             f"Saludos cordiales,\nEquipo Case Mantenciones"
@@ -73,8 +87,8 @@ class ServicioNotificacionEmail(ServicioNotificacion):
             f"Se le ha asignado una nueva orden de mantención.\n\n"
             f"Cliente: {orden.cliente.nombre}\n"
             f"Contacto: {orden.cliente.telefono} | {orden.cliente.email}\n"
-            f"Tractor: {orden.tractor.modelo.nombre}\n"
-            f"N° Serie: {orden.tractor.numero_serie}\n"
+            f"Equipo: {self._nombre_modelo(orden)}\n"
+            f"N° Serie: {self._numero_serie(orden)}\n"
             f"Tipo: {orden.tipo_mantencion.value}\n"
             f"Fecha Solicitud: {orden.fecha_solicitud.strftime('%d/%m/%Y %H:%M')}\n\n"
             f"Repuestos requeridos:\n{repuestos}\n\n"

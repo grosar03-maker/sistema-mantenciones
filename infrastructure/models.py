@@ -173,8 +173,12 @@ class OrdenMantencion(models.Model):
         Cliente, on_delete=models.CASCADE, related_name="ordenes"
     )
     tractor = models.ForeignKey(
-        Tractor, on_delete=models.CASCADE, related_name="ordenes"
+        Tractor, on_delete=models.SET_NULL, null=True, blank=True, related_name="ordenes"
     )
+    modelo = models.ForeignKey(
+        ModeloTractor, on_delete=models.SET_NULL, null=True, blank=True, related_name="ordenes"
+    )
+    numero_serie_cliente = models.CharField(max_length=100, blank=True, default="")
     mecanico_asignado = models.ForeignKey(
         Mecanico,
         on_delete=models.SET_NULL,

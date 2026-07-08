@@ -45,7 +45,7 @@
                     {% for orden in ordenes %}
                     <tr class="border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                         <td class="py-4 px-4 font-mono text-xs text-[#64748B] dark:text-slate-400">{{ orden.id|truncatechars:8 }}</td>
-                        <td class="py-4 px-4 text-[#0F172A] dark:text-white font-medium">{{ orden.tractor.numero_serie }}</td>
+                        <td class="py-4 px-4 text-[#0F172A] dark:text-white font-medium">{% if orden.numero_serie_cliente %}{{ orden.numero_serie_cliente }}{% elif orden.tractor %}{{ orden.tractor.numero_serie }}{% else %}-{% endif %}</td>
                         <td class="py-4 px-4 text-[#64748B] dark:text-slate-400">{{ orden.get_tipo_mantencion_display }}</td>
                         <td class="py-4 px-4 text-[#64748B] dark:text-slate-400">{{ orden.fecha_solicitud|date:"d/m/Y" }}</td>
                         <td class="py-4 px-4 text-[#64748B] dark:text-slate-400">{{ orden.fecha_programada|date:"d/m/Y"|default:"-" }}</td>

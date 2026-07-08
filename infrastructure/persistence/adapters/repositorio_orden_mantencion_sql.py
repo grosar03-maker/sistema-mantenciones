@@ -17,18 +17,21 @@ from infrastructure.models import Repuesto as RepuestoORM
 class RepositorioOrdenMantencionSQL(RepositorioOrdenMantencion):
 
     def guardar(self, orden: OrdenDomain) -> None:
+        defaults = {
+            "cliente_id": orden.cliente.id,
+            "mecanico_asignado_id": orden.mecanico_asignado.id if orden.mecanico_asignado else None,
+            "tipo_mantencion": orden.tipo_mantencion.value,
+            "estado": orden.estado.value,
+            "fecha_solicitud": orden.fecha_solicitud,
+            "fecha_programada": orden.fecha_programada,
+            "nota_cliente": orden.nota_cliente,
+            "numero_serie_cliente": orden.numero_serie_cliente,
+            "modelo_id": orden.modelo.id if orden.modelo else None,
+            "tractor_id": orden.tractor.id if orden.tractor else None,
+        }
         orm, _ = OrdenORM.objects.update_or_create(
             id=orden.id,
-            defaults={
-                "cliente_id": orden.cliente.id,
-                "tractor_id": orden.tractor.id,
-                "mecanico_asignado_id": orden.mecanico_asignado.id if orden.mecanico_asignado else None,
-                "tipo_mantencion": orden.tipo_mantencion.value,
-                "estado": orden.estado.value,
-                "fecha_solicitud": orden.fecha_solicitud,
-                "fecha_programada": orden.fecha_programada,
-                "nota_cliente": orden.nota_cliente,
-            },
+            defaults=defaults,
         )
         if orden.repuestos:
             orm.repuestos.set([r.id for r in orden.repuestos])
@@ -37,7 +40,7 @@ class RepositorioOrdenMantencionSQL(RepositorioOrdenMantencion):
         try:
             orm = (
                 OrdenORM.objects
-                .select_related("cliente", "tractor__modelo", "tractor__propietario", "mecanico_asignado")
+                .select_related("cliente", "tractor__modelo", "tractor__propietario", "mecanico_asignado", "modelo")
                 .prefetch_related("repuestos")
                 .get(id=orden_id)
             )
@@ -48,7 +51,7 @@ class RepositorioOrdenMantencionSQL(RepositorioOrdenMantencion):
     def listar_por_estado(self, estado: EstadoOrden) -> list[OrdenDomain]:
         orms = (
             OrdenORM.objects
-            .select_related("cliente", "tractor__modelo", "tractor__propietario")
+            .select_related("cliente", "tractor__modelo", "tractor__propietario", "modelo")
             .prefetch_related("repuestos")
             .filter(estado=estado.value)
         )
@@ -57,7 +60,7 @@ class RepositorioOrdenMantencionSQL(RepositorioOrdenMantencion):
     def listar_por_cliente(self, cliente_id: UUID) -> list[OrdenDomain]:
         orms = (
             OrdenORM.objects
-            .select_related("cliente", "tractor__modelo", "tractor__propietario")
+            .select_related("cliente", "tractor__modelo", "tractor__propietario", "modelo")
             .prefetch_related("repuestos")
             .filter(cliente_id=cliente_id)
         )
@@ -66,7 +69,7 @@ class RepositorioOrdenMantencionSQL(RepositorioOrdenMantencion):
     def listar_por_mecanico(self, mecanico_id: UUID) -> list[OrdenDomain]:
         orms = (
             OrdenORM.objects
-            .select_related("cliente", "tractor__modelo", "tractor__propietario", "mecanico_asignado")
+            .select_related("cliente", "tractor__modelo", "tractor__propietario", "mecanico_asignado", "modelo")
             .prefetch_related("repuestos")
             .filter(mecanico_asignado_id=mecanico_id)
         )
@@ -83,6 +86,32 @@ class RepositorioOrdenMantencionSQL(RepositorioOrdenMantencion):
             for r in orm.repuestos.all()
         )
 
+        tractor_domain = None
+        if orm.tractor:
+            tractor_domain = TractorDomain(
+                id=orm.tractor.id,
+                numero_serie=orm.tractor.numero_serie,
+                modelo=ModeloDomain(
+                    id=orm.tractor.modelo.id,
+                    nombre=orm.tractor.modelo.nombre,
+                    marca=orm.tractor.modelo.marca,
+                ) if orm.tractor.modelo else ModeloDomain(id="", nombre="(Modelo eliminado)", marca=""),
+                propietario=ClienteDomain(
+                    id=orm.tractor.propietario.id,
+                    nombre=orm.tractor.propietario.nombre,
+                    email=orm.tractor.propietario.email,
+                    telefono=orm.tractor.propietario.telefono,
+                ),
+            )
+
+        modelo_domain = None
+        if orm.modelo:
+            modelo_domain = ModeloDomain(
+                id=orm.modelo.id,
+                nombre=orm.modelo.nombre,
+                marca=orm.modelo.marca,
+            )
+
         return OrdenDomain(
             id=orm.id,
             cliente=ClienteDomain(
@@ -91,21 +120,9 @@ class RepositorioOrdenMantencionSQL(RepositorioOrdenMantencion):
                 email=orm.cliente.email,
                 telefono=orm.cliente.telefono,
             ),
-            tractor=TractorDomain(
-                id=orm.tractor.id,
-                numero_serie=orm.tractor.numero_serie,
-                modelo=ModeloDomain(
-                    id=orm.tractor.modelo.id,
-                    nombre=orm.tractor.modelo.nombre,
-                    marca=orm.tractor.modelo.marca,
-                ),
-                propietario=ClienteDomain(
-                    id=orm.tractor.propietario.id,
-                    nombre=orm.tractor.propietario.nombre,
-                    email=orm.tractor.propietario.email,
-                    telefono=orm.tractor.propietario.telefono,
-                ),
-            ),
+            tractor=tractor_domain,
+            modelo=modelo_domain,
+            numero_serie_cliente=orm.numero_serie_cliente or "",
             tipo_mantencion=TipoMantencion(orm.tipo_mantencion),
             fecha_solicitud=orm.fecha_solicitud,
             fecha_programada=orm.fecha_programada,

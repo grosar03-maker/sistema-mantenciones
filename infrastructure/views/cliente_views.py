@@ -8,12 +8,12 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.http import require_http_methods
 
-from infrastructure.models import Cliente, OrdenMantencion
+from infrastructure.models import Cliente, OrdenMantencion, ModeloTractor
 
 from application.use_cases.solicitar_mantencion import SolicitarMantencion
 from domain.value_objects.tipo_mantencion import TipoMantencion
+from domain.entities.modelo import Modelo as ModeloDomain
 from infrastructure.persistence.adapters.repositorio_cliente_sql import RepositorioClienteSQL
-from infrastructure.persistence.adapters.repositorio_tractor_sql import RepositorioTractorSQL
 from infrastructure.persistence.adapters.repositorio_orden_mantencion_sql import RepositorioOrdenMantencionSQL
 from infrastructure.persistence.adapters.repositorio_catalogo_repuestos_sql import RepositorioCatalogoRepuestosSQL
 from infrastructure.mail_service.adapters.servicio_notificacion_email import ServicioNotificacionEmail
@@ -79,8 +79,12 @@ def solicitar_mantencion(request):
             "tipos": TipoMantencion,
         })
 
+    modelos_qs = ModeloTractor.objects.all().order_by("marca", "nombre")
+    marcas = sorted(set(modelos_qs.values_list("marca", flat=True)))
+
     if request.method == "POST":
-        numero_serie = request.POST.get("numero_serie")
+        modelo_id = request.POST.get("modelo_id")
+        numero_serie_cliente = request.POST.get("numero_serie_cliente", "").strip()
         tipo_str = request.POST.get("tipo_mantencion")
         fecha_str = request.POST.get("fecha_programada")
         nota_cliente = request.POST.get("nota_cliente", "")
@@ -91,16 +95,46 @@ def solicitar_mantencion(request):
 
         tipo = TipoMantencion(tipo_str)
 
+        if not modelo_id:
+            return render(request, "cliente/solicitar_mantencion.html", {
+                "error": "Debe seleccionar un modelo",
+                "tipos": TipoMantencion,
+                "marcas": marcas,
+                "modelos": modelos_qs,
+            })
+
+        try:
+            modelo_orm = ModeloTractor.objects.get(id=modelo_id)
+        except ModeloTractor.DoesNotExist:
+            return render(request, "cliente/solicitar_mantencion.html", {
+                "error": "Modelo no encontrado",
+                "tipos": TipoMantencion,
+                "marcas": marcas,
+                "modelos": modelos_qs,
+            })
+
+        modelo_domain = ModeloDomain(
+            id=str(modelo_orm.id),
+            nombre=modelo_orm.nombre,
+            marca=modelo_orm.marca,
+        )
+
         caso_uso = SolicitarMantencion(
             repo_cliente=RepositorioClienteSQL(),
-            repo_tractor=RepositorioTractorSQL(),
             repo_orden=RepositorioOrdenMantencionSQL(),
             repo_catalogo=RepositorioCatalogoRepuestosSQL(),
             notificador=ServicioNotificacionEmail(),
         )
 
         try:
-            orden = caso_uso.ejecutar(str(cliente_obj.id), numero_serie, tipo, fecha_programada, nota_cliente)
+            orden = caso_uso.ejecutar(
+                str(cliente_obj.id),
+                modelo_domain,
+                numero_serie_cliente,
+                tipo,
+                fecha_programada,
+                nota_cliente,
+            )
             imagenes = request.FILES.getlist("imagenes")
             for img in imagenes:
                 from infrastructure.models import ImagenOrden
@@ -110,23 +144,34 @@ def solicitar_mantencion(request):
             return render(request, "cliente/solicitar_mantencion.html", {
                 "error": str(e),
                 "tipos": TipoMantencion,
+                "marcas": marcas,
+                "modelos": modelos_qs,
             })
 
     return render(request, "cliente/solicitar_mantencion.html", {
         "tipos": TipoMantencion,
+        "marcas": marcas,
+        "modelos": modelos_qs,
     })
 
 
 @login_required
 def solicitud_exitosa(request, orden_id):
     orden = get_object_or_404(
-        OrdenMantencion.objects.select_related("cliente", "tractor__modelo"),
+        OrdenMantencion.objects.select_related("cliente", "tractor__modelo", "modelo"),
         id=orden_id,
     )
+    if orden.modelo:
+        modelo_nombre = f"{orden.modelo.marca} {orden.modelo.nombre}"
+    elif orden.tractor and orden.tractor.modelo:
+        modelo_nombre = f"{orden.tractor.modelo.marca} {orden.tractor.modelo.nombre}"
+    else:
+        modelo_nombre = "No especificado"
+
     return render(request, "cliente/solicitud_exitosa.html", {
         "email_cliente": request.user.email,
-        "modelo_tractor": orden.tractor.modelo.nombre,
-        "numero_serie": orden.tractor.numero_serie,
+        "modelo_tractor": modelo_nombre,
+        "numero_serie_cliente": orden.numero_serie_cliente or "",
         "tipo_mantencion": orden.get_tipo_mantencion_display(),
         "fecha_programada": orden.fecha_programada,
     })
@@ -172,33 +217,10 @@ def dashboard_cliente(request):
     ordenes = OrdenMantencion.objects.filter(
         cliente=cliente_obj
     ).select_related(
-        "tractor__modelo", "mecanico_asignado"
+        "tractor__modelo", "mecanico_asignado", "modelo"
     ).prefetch_related("imagenes").order_by("-fecha_solicitud")
 
     return render(request, "cliente/dashboard.html", {
         "cliente": cliente_obj,
         "ordenes": ordenes,
-    })
-
-
-@login_required
-def buscar_tractor_api(request):
-    numero_serie = request.GET.get("q", "").strip()
-    if not numero_serie:
-        return JsonResponse({"encontrado": False, "error": "Ingrese un número de serie"})
-
-    repo = RepositorioTractorSQL()
-    modelo = repo.obtener_modelo_por_numero_serie(numero_serie)
-
-    if not modelo:
-        return JsonResponse({"encontrado": False, "error": "Tractor no encontrado"})
-
-    tractor = repo.obtener_por_numero_serie(numero_serie)
-
-    return JsonResponse({
-        "encontrado": True,
-        "modelo": modelo.nombre,
-        "marca": modelo.marca,
-        "cliente_id": str(tractor.propietario.id) if tractor else None,
-        "tractor_id": str(tractor.id) if tractor else None,
     })
