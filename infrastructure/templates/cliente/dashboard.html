@@ -6,14 +6,14 @@
 {% block content %}
 <div class="min-h-screen bg-gradient-to-br from-[#F8FAFC] via-white to-[#F1F5F9] dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
     <div class="max-w-5xl mx-auto px-4 py-12">
-        <div class="flex items-center justify-between mb-10">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 sm:mb-10 gap-4">
             <div>
-                <h1 class="text-3xl font-bold text-[#0F172A] dark:text-white">Mis Órdenes de Mantención</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold text-[#0F172A] dark:text-white">Mis Órdenes de Mantención</h1>
                 <p class="mt-1 text-[#64748B] dark:text-slate-400">Bienvenido, {{ cliente.nombre }}</p>
             </div>
             <a href="{% url 'solicitar_mantencion' %}"
-               class="inline-flex items-center gap-2 px-6 py-3 bg-[#CC0000] text-white rounded-xl font-semibold hover:bg-[#990000] transition-all duration-200 shadow-lg shadow-red-200">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+               class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#CC0000] text-white rounded-xl font-semibold hover:bg-[#990000] transition-all duration-200 shadow-lg shadow-red-200 text-sm sm:text-base">
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
                 Nueva Solicitud
@@ -31,26 +31,26 @@
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-slate-200 dark:border-slate-700">
-                        <th class="text-left py-4 px-4 font-semibold text-[#0F172A] dark:text-white">N° Orden</th>
-                        <th class="text-left py-4 px-4 font-semibold text-[#0F172A] dark:text-white">Tractor</th>
-                        <th class="text-left py-4 px-4 font-semibold text-[#0F172A] dark:text-white">Tipo</th>
-                        <th class="text-left py-4 px-4 font-semibold text-[#0F172A] dark:text-white">Fecha Solicitud</th>
-                        <th class="text-left py-4 px-4 font-semibold text-[#0F172A] dark:text-white">Fecha Programada</th>
-                        <th class="text-left py-4 px-4 font-semibold text-[#0F172A] dark:text-white">Estado</th>
-                        <th class="text-left py-4 px-4 font-semibold text-[#0F172A] dark:text-white">Mecánico</th>
-                        <th class="text-left py-4 px-4 font-semibold text-[#0F172A] dark:text-white">Fotos</th>
+                        <th class="text-left py-4 px-2 sm:px-4 font-semibold text-[#0F172A] dark:text-white text-xs sm:text-sm">N° Orden</th>
+                        <th class="text-left py-4 px-2 sm:px-4 font-semibold text-[#0F172A] dark:text-white text-xs sm:text-sm">Equipo</th>
+                        <th class="text-left py-4 px-2 sm:px-4 font-semibold text-[#0F172A] dark:text-white text-xs sm:text-sm hidden sm:table-cell">Tipo</th>
+                        <th class="text-left py-4 px-2 sm:px-4 font-semibold text-[#0F172A] dark:text-white text-xs sm:text-sm hidden md:table-cell">Solicitud</th>
+                        <th class="text-left py-4 px-2 sm:px-4 font-semibold text-[#0F172A] dark:text-white text-xs sm:text-sm">Programada</th>
+                        <th class="text-left py-4 px-2 sm:px-4 font-semibold text-[#0F172A] dark:text-white text-xs sm:text-sm">Estado</th>
+                        <th class="text-left py-4 px-2 sm:px-4 font-semibold text-[#0F172A] dark:text-white text-xs sm:text-sm hidden md:table-cell">Mecánico</th>
+                        <th class="text-left py-4 px-2 sm:px-4 font-semibold text-[#0F172A] dark:text-white text-xs sm:text-sm hidden md:table-cell">Fotos</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for orden in ordenes %}
                     <tr class="border-b border-slate-100 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                        <td class="py-4 px-4 font-mono text-xs text-[#64748B] dark:text-slate-400">{{ orden.id|truncatechars:8 }}</td>
-                        <td class="py-4 px-4 text-[#0F172A] dark:text-white font-medium">{% if orden.numero_serie_cliente %}{{ orden.numero_serie_cliente }}{% elif orden.tractor %}{{ orden.tractor.numero_serie }}{% else %}-{% endif %}</td>
-                        <td class="py-4 px-4 text-[#64748B] dark:text-slate-400">{{ orden.get_tipo_mantencion_display }}</td>
-                        <td class="py-4 px-4 text-[#64748B] dark:text-slate-400">{{ orden.fecha_solicitud|date:"d/m/Y" }}</td>
-                        <td class="py-4 px-4 text-[#64748B] dark:text-slate-400">{{ orden.fecha_programada|date:"d/m/Y"|default:"-" }}</td>
-                        <td class="py-4 px-4">
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                        <td class="py-4 px-2 sm:px-4 font-mono text-xs text-[#64748B] dark:text-slate-400">{{ orden.id|truncatechars:8 }}</td>
+                        <td class="py-4 px-2 sm:px-4 text-[#0F172A] dark:text-white font-medium text-xs sm:text-sm">{% if orden.numero_serie_cliente %}{{ orden.numero_serie_cliente }}{% elif orden.tractor %}{{ orden.tractor.numero_serie }}{% else %}-{% endif %}</td>
+                        <td class="py-4 px-2 sm:px-4 text-[#64748B] dark:text-slate-400 text-xs sm:text-sm hidden sm:table-cell">{{ orden.get_tipo_mantencion_display }}</td>
+                        <td class="py-4 px-2 sm:px-4 text-[#64748B] dark:text-slate-400 text-xs sm:text-sm hidden md:table-cell">{{ orden.fecha_solicitud|date:"d/m/Y" }}</td>
+                        <td class="py-4 px-2 sm:px-4 text-[#64748B] dark:text-slate-400 text-xs sm:text-sm">{{ orden.fecha_programada|date:"d/m/Y"|default:"-" }}</td>
+                        <td class="py-4 px-2 sm:px-4">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-medium whitespace-nowrap
                                 {% if orden.estado == 'pendiente' %}bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300
                                 {% elif orden.estado == 'asignada' %}bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300
                                 {% elif orden.estado == 'en_progreso' %}bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300
@@ -60,8 +60,8 @@
                                 {{ orden.get_estado_display }}
                             </span>
                         </td>
-                        <td class="py-4 px-4 text-[#64748B] dark:text-slate-400">{{ orden.mecanico_asignado.nombre|default:"-" }}</td>
-                        <td class="py-4 px-4">
+                        <td class="py-4 px-2 sm:px-4 text-[#64748B] dark:text-slate-400 text-xs sm:text-sm hidden md:table-cell">{{ orden.mecanico_asignado.nombre|default:"-" }}</td>
+                        <td class="py-4 px-2 sm:px-4 hidden md:table-cell">
                             {% with count=orden.imagenes.count %}
                             {% if count > 0 %}
                             <span class="inline-flex items-center gap-1 text-xs text-[#64748B] dark:text-slate-400">

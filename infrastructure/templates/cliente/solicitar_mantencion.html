@@ -5,43 +5,43 @@
 
 {% block content %}
 <div class="min-h-screen bg-gradient-to-br from-[#F8FAFC] via-white to-[#F1F5F9] dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
-    <div class="max-w-3xl mx-auto px-4 py-12">
-        <div class="text-center mb-10">
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-[#CC0000] shadow-lg shadow-red-200 mb-4">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div class="max-w-3xl mx-auto px-4 py-8 sm:py-12">
+        <div class="text-center mb-6 sm:mb-10">
+            <div class="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-[#CC0000] shadow-lg shadow-red-200 mb-4">
+                <svg class="w-7 h-7 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
             </div>
-            <h1 class="text-3xl font-bold text-[#0F172A] dark:text-white">Solicitud de Mantención</h1>
-            <p class="mt-2 text-[#64748B] dark:text-slate-400 text-lg">Seleccione su modelo y número de serie</p>
+            <h1 class="text-2xl sm:text-3xl font-bold text-[#0F172A] dark:text-white">Solicitud de Mantención</h1>
+            <p class="mt-2 text-sm sm:text-lg text-[#64748B] dark:text-slate-400">Seleccione su modelo y número de serie</p>
         </div>
 
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-slate-900/50 border border-slate-100 dark:border-slate-700 overflow-hidden">
-            <div class="p-8">
-                <div class="flex items-center justify-center mb-10">
-                    <div class="flex items-center">
-                        <div class="step-indicator flex items-center" data-step="1">
-                            <div class="w-10 h-10 rounded-full bg-[#CC0000] text-white flex items-center justify-center text-sm font-semibold shadow-md shadow-red-200">1</div>
-                            <span class="ml-3 text-sm font-medium text-[#0F172A] dark:text-white">Identificar Equipo</span>
-                        </div>
-                        <div class="w-16 h-0.5 mx-4 bg-slate-200 dark:bg-slate-600 step-line" data-step="1"></div>
-                        <div class="step-indicator flex items-center" data-step="2">
-                            <div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-600 text-slate-500 dark:text-slate-400 flex items-center justify-center text-sm font-semibold">2</div>
-                            <span class="ml-3 text-sm font-medium text-slate-400 dark:text-slate-500">Tipo</span>
-                        </div>
-                        <div class="w-16 h-0.5 mx-4 bg-slate-200 dark:bg-slate-600 step-line" data-step="2"></div>
-                        <div class="step-indicator flex items-center" data-step="3">
-                            <div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-600 text-slate-500 dark:text-slate-400 flex items-center justify-center text-sm font-semibold">3</div>
-                            <span class="ml-3 text-sm font-medium text-slate-400 dark:text-slate-500">Fecha</span>
-                        </div>
-                        <div class="w-16 h-0.5 mx-4 bg-slate-200 dark:bg-slate-600 step-line" data-step="3"></div>
-                        <div class="step-indicator flex items-center" data-step="4">
-                            <div class="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-600 text-slate-500 dark:text-slate-400 flex items-center justify-center text-sm font-semibold">4</div>
-                            <span class="ml-3 text-sm font-medium text-slate-400 dark:text-slate-500">Confirmar</span>
-                        </div>
-                    </div>
+            <div class="p-5 sm:p-8">
+        <div class="flex items-center justify-center mb-10 overflow-x-auto pb-2">
+            <div class="flex items-center mx-auto px-2">
+                <div class="step-indicator flex items-center" data-step="1">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#CC0000] text-white flex items-center justify-center text-xs sm:text-sm font-semibold shadow-md shadow-red-200 shrink-0">1</div>
+                    <span class="ml-1 sm:ml-3 text-[10px] sm:text-sm font-medium text-[#0F172A] dark:text-white whitespace-nowrap hidden sm:inline">Identificar Equipo</span>
                 </div>
+                <div class="w-6 sm:w-16 h-0.5 mx-1 sm:mx-4 bg-slate-200 dark:bg-slate-600 step-line shrink-0" data-step="1"></div>
+                <div class="step-indicator flex items-center" data-step="2">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-slate-200 dark:bg-slate-600 text-slate-500 dark:text-slate-400 flex items-center justify-center text-xs sm:text-sm font-semibold shrink-0">2</div>
+                    <span class="ml-1 sm:ml-3 text-[10px] sm:text-sm font-medium text-slate-400 dark:text-slate-500 whitespace-nowrap hidden sm:inline">Tipo</span>
+                </div>
+                <div class="w-6 sm:w-16 h-0.5 mx-1 sm:mx-4 bg-slate-200 dark:bg-slate-600 step-line shrink-0" data-step="2"></div>
+                <div class="step-indicator flex items-center" data-step="3">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-slate-200 dark:bg-slate-600 text-slate-500 dark:text-slate-400 flex items-center justify-center text-xs sm:text-sm font-semibold shrink-0">3</div>
+                    <span class="ml-1 sm:ml-3 text-[10px] sm:text-sm font-medium text-slate-400 dark:text-slate-500 whitespace-nowrap hidden sm:inline">Fecha</span>
+                </div>
+                <div class="w-6 sm:w-16 h-0.5 mx-1 sm:mx-4 bg-slate-200 dark:bg-slate-600 step-line shrink-0" data-step="3"></div>
+                <div class="step-indicator flex items-center" data-step="4">
+                    <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-slate-200 dark:bg-slate-600 text-slate-500 dark:text-slate-400 flex items-center justify-center text-xs sm:text-sm font-semibold shrink-0">4</div>
+                    <span class="ml-1 sm:ml-3 text-[10px] sm:text-sm font-medium text-slate-400 dark:text-slate-500 whitespace-nowrap hidden sm:inline">Confirmar</span>
+                </div>
+            </div>
+        </div>
 
                 <form id="mantencion-form" method="POST" action="{% url 'solicitar_mantencion' %}" enctype="multipart/form-data">
                     {% csrf_token %}
@@ -56,7 +56,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Marca</label>
                                 <select id="marca-select" name="marca"
-                                    class="w-full px-4 py-3.5 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:border-[#CC0000] focus:ring-4 focus:ring-red-50 outline-none transition-all duration-200 bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white">
+                                    class="w-full px-4 py-3 sm:py-3.5 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:border-[#CC0000] focus:ring-4 focus:ring-red-50 outline-none transition-all duration-200 bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm sm:text-base">
                                     <option value="">Seleccione una marca</option>
                                     {% for marca in marcas %}
                                     <option value="{{ marca }}">{{ marca }}</option>
@@ -67,7 +67,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-[#0F172A] dark:text-white mb-2">Modelo</label>
                                 <select id="modelo-select" name="modelo_id"
-                                    class="w-full px-4 py-3.5 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:border-[#CC0000] focus:ring-4 focus:ring-red-50 outline-none transition-all duration-200 bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                                    class="w-full px-4 py-3 sm:py-3.5 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:border-[#CC0000] focus:ring-4 focus:ring-red-50 outline-none transition-all duration-200 bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                     disabled>
                                     <option value="">Primero seleccione una marca</option>
                                 </select>
@@ -84,14 +84,14 @@
                                         </svg>
                                     </div>
                                     <input type="text" id="numero_serie_cliente" name="numero_serie_cliente"
-                                        class="w-full pl-12 pr-4 py-3.5 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:border-[#CC0000] focus:ring-4 focus:ring-red-50 outline-none transition-all duration-200 bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white placeholder-slate-400 dark:placeholder-slate-500"
+                                        class="w-full pl-10 sm:pl-12 pr-4 py-3 sm:py-3.5 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:border-[#CC0000] focus:ring-4 focus:ring-red-50 outline-none transition-all duration-200 bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm sm:text-base"
                                         placeholder="Ej: CASE-MAGNUM-7250-2024"
                                         autocomplete="off">
                                 </div>
                             </div>
 
                             <button type="button" id="btn-continuar-1"
-                                class="w-full mt-6 bg-[#CC0000] text-white py-4 px-6 rounded-xl font-semibold hover:bg-[#990000] transition-all duration-200 shadow-lg shadow-red-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="w-full mt-6 bg-[#CC0000] text-white py-3 sm:py-4 px-6 rounded-xl font-semibold hover:bg-[#990000] transition-all duration-200 shadow-lg shadow-red-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                 disabled>
                                 Continuar
                             </button>
@@ -194,13 +194,13 @@
                             <div id="foto-preview" class="flex flex-wrap gap-3 mt-3"></div>
                         </div>
 
-                        <div class="flex justify-between mt-10 max-w-md mx-auto">
+                        <div class="flex justify-between mt-10 max-w-md mx-auto gap-3">
                             <button type="button" id="btn-atras-2"
-                                class="px-8 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl font-medium text-[#64748B] dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200">
+                                class="flex-1 sm:flex-none px-4 sm:px-8 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl font-medium text-[#64748B] dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200 text-sm sm:text-base">
                                 Atrás
                             </button>
                             <button type="button" id="btn-continuar-2"
-                                class="px-8 py-3 bg-[#CC0000] text-white rounded-xl font-semibold hover:bg-[#990000] transition-all duration-200 shadow-lg shadow-red-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="flex-1 sm:flex-none px-4 sm:px-8 py-3 bg-[#CC0000] text-white rounded-xl font-semibold hover:bg-[#990000] transition-all duration-200 shadow-lg shadow-red-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                 disabled>
                                 Continuar
                             </button>
@@ -245,13 +245,13 @@
                             <p id="fecha-seleccionada" class="text-center text-sm text-[#64748B] dark:text-slate-400 mt-3">Seleccione un día disponible</p>
                         </div>
 
-                        <div class="flex justify-between mt-10 max-w-md mx-auto">
+                        <div class="flex justify-between mt-10 max-w-md mx-auto gap-3">
                             <button type="button" id="btn-atras-3"
-                                class="px-8 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl font-medium text-[#64748B] dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200">
+                                class="flex-1 sm:flex-none px-4 sm:px-8 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl font-medium text-[#64748B] dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200 text-sm sm:text-base">
                                 Atrás
                             </button>
                             <button type="button" id="btn-continuar-3"
-                                class="px-8 py-3 bg-[#CC0000] text-white rounded-xl font-semibold hover:bg-[#990000] transition-all duration-200 shadow-lg shadow-red-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="flex-1 sm:flex-none px-4 sm:px-8 py-3 bg-[#CC0000] text-white rounded-xl font-semibold hover:bg-[#990000] transition-all duration-200 shadow-lg shadow-red-200 disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base"
                                 disabled>
                                 Continuar
                             </button>
@@ -288,13 +288,13 @@
                             </div>
                         </div>
 
-                        <div class="flex justify-between mt-10 max-w-md mx-auto">
+                        <div class="flex justify-between mt-10 max-w-md mx-auto gap-3">
                             <button type="button" id="btn-atras-4"
-                                class="px-8 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl font-medium text-[#64748B] dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200">
+                                class="flex-1 sm:flex-none px-4 sm:px-8 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl font-medium text-[#64748B] dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200 text-sm sm:text-base">
                                 Atrás
                             </button>
                             <button type="submit"
-                                class="px-10 py-3 bg-[#CC0000] text-white rounded-xl font-semibold hover:bg-[#990000] transition-all duration-200 shadow-lg shadow-red-200">
+                                class="flex-1 sm:flex-none px-4 sm:px-8 py-3 bg-[#CC0000] text-white rounded-xl font-semibold hover:bg-[#990000] transition-all duration-200 shadow-lg shadow-red-200 text-sm sm:text-base">
                                 Enviar Solicitud
                             </button>
                         </div>
@@ -344,22 +344,22 @@
             const circle = el.querySelector('div');
             const label = el.querySelector('span');
             if (num < step) {
-                circle.className = 'w-10 h-10 rounded-full bg-green-500 text-white flex items-center justify-center text-sm font-semibold shadow-md shadow-green-200';
-                label.className = 'ml-3 text-sm font-medium text-green-600 dark:text-green-400';
+                circle.className = 'w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-green-500 text-white flex items-center justify-center text-xs sm:text-sm font-semibold shadow-md shadow-green-200 shrink-0';
+                label.className = 'ml-1 sm:ml-3 text-[10px] sm:text-sm font-medium text-green-600 dark:text-green-400';
             } else if (num === step) {
-                circle.className = 'w-10 h-10 rounded-full bg-[#CC0000] text-white flex items-center justify-center text-sm font-semibold shadow-md shadow-red-200';
-                label.className = 'ml-3 text-sm font-medium text-[#0F172A] dark:text-white';
+                circle.className = 'w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#CC0000] text-white flex items-center justify-center text-xs sm:text-sm font-semibold shadow-md shadow-red-200 shrink-0';
+                label.className = 'ml-1 sm:ml-3 text-[10px] sm:text-sm font-medium text-[#0F172A] dark:text-white';
             } else {
-                circle.className = 'w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-600 text-slate-500 dark:text-slate-400 flex items-center justify-center text-sm font-semibold';
-                label.className = 'ml-3 text-sm font-medium text-slate-400 dark:text-slate-500';
+                circle.className = 'w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-slate-200 dark:bg-slate-600 text-slate-500 dark:text-slate-400 flex items-center justify-center text-xs sm:text-sm font-semibold shrink-0';
+                label.className = 'ml-1 sm:ml-3 text-[10px] sm:text-sm font-medium text-slate-400 dark:text-slate-500';
             }
         });
         document.querySelectorAll('.step-line').forEach((el, i) => {
             const num = i + 1;
             if (num < step) {
-                el.className = 'w-16 h-0.5 mx-4 bg-green-400 step-line';
+                el.className = 'w-6 sm:w-16 h-0.5 mx-1 sm:mx-4 bg-green-400 step-line';
             } else {
-                el.className = 'w-16 h-0.5 mx-4 bg-slate-200 step-line';
+                el.className = 'w-6 sm:w-16 h-0.5 mx-1 sm:mx-4 bg-slate-200 dark:bg-slate-600 step-line';
             }
         });
         if (step === 3) renderCalendar();
