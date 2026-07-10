@@ -515,6 +515,14 @@ def listar_catalogos(request):
         "mecanico": mecanico,
         "tipos_mantencion": CatalogoRepuestos.TIPOS_MANTENCION,
         "tipos": ModeloTractor.TIPOS,
+        "tipos_repuesto": Repuesto.TIPOS_REPUESTO,
+        "repuestos_json": json.dumps([{
+            "id": str(r.id),
+            "codigo": r.codigo,
+            "nombre": r.nombre,
+            "tipo": r.tipo,
+            "tipo_label": r.get_tipo_display(),
+        } for r in repuestos]),
     })
 
 

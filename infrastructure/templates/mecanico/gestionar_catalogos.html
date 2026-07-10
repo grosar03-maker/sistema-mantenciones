@@ -323,14 +323,22 @@
 
                                         <form method="POST" action="{% url 'agregar_item_catalogo' catalogo.id %}" class="flex gap-2 items-end">
                                             {% csrf_token %}
-                                            <div class="flex-1">
-                                                <select name="repuesto_id"
-                                                        class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white focus:border-[#CC0000] outline-none">
-                                                    <option value="">Agregar repuesto...</option>
-                                                    {% for r in repuestos %}
-                                                    <option value="{{ r.id }}">[{{ r.codigo }}] {{ r.nombre }}</option>
-                                                    {% endfor %}
-                                                </select>
+                                            <div class="flex-1 relative custom-select">
+                                                <input type="hidden" name="repuesto_id" value="">
+                                                <button type="button" onclick="toggleSelect(this)"
+                                                    class="w-full px-3 py-2 text-sm text-left border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#64748B] dark:text-slate-400 focus:border-[#CC0000] outline-none flex items-center justify-between gap-2">
+                                                    <span class="truncate">Agregar repuesto...</span>
+                                                    <svg class="w-4 h-4 shrink-0 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                                    </svg>
+                                                </button>
+                                                <div class="absolute left-0 right-0 top-full mt-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg shadow-xl z-50 hidden select-panel">
+                                                    <div class="p-2 border-b border-slate-100 dark:border-slate-600">
+                                                        <input type="text" placeholder="Buscar repuesto..." oninput="buscarEnSelect(this)"
+                                                            class="w-full px-3 py-2 text-sm border border-slate-200 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-800 text-[#0F172A] dark:text-white outline-none">
+                                                    </div>
+                                                    <div class="max-h-60 overflow-y-auto select-opciones"></div>
+                                                </div>
                                             </div>
                                             <div class="w-20">
                                                 <input type="number" name="cantidad" value="1" min="1"
@@ -363,6 +371,8 @@
 </div>
 
 <script>
+var datosRepuestos = {{ repuestos_json|safe }};
+
 function toggleMarca(id, btn) {
     const div = document.getElementById(id);
     const icon = btn.querySelector('svg:last-child');
@@ -395,6 +405,82 @@ function abrirModeloDesdeHash() {
     });
     setTimeout(function() { modeloBody.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 150);
 }
-document.addEventListener('DOMContentLoaded', abrirModeloDesdeHash);
+
+function toggleSelect(btn) {
+    var cont = btn.closest('.custom-select');
+    var panel = cont.querySelector('.select-panel');
+    var abierto = !panel.classList.contains('hidden');
+    cerrarTodosSelects();
+    if (!abierto) {
+        panel.classList.remove('hidden');
+        var opciones = panel.querySelector('.select-opciones');
+        if (!opciones.querySelector('.select-group')) {
+            renderizarOpciones(opciones);
+        }
+        panel.querySelector('input').focus();
+        btn.querySelector('svg').classList.add('rotate-180');
+    }
+}
+function cerrarTodosSelects() {
+    document.querySelectorAll('.select-panel').forEach(function(p) {
+        p.classList.add('hidden');
+    });
+    document.querySelectorAll('.custom-select button svg:first-child').forEach(function(s) {
+        s.classList.remove('rotate-180');
+    });
+}
+function renderizarOpciones(container) {
+    var grupos = {};
+    datosRepuestos.forEach(function(r) {
+        if (!grupos[r.tipo]) grupos[r.tipo] = { label: r.tipo_label, items: [] };
+        grupos[r.tipo].items.push(r);
+    });
+    var html = '';
+    Object.keys(grupos).forEach(function(tipo) {
+        var g = grupos[tipo];
+        html += '<div class="select-group">';
+        html += '<div class="px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#64748B] dark:text-slate-400 bg-slate-50 dark:bg-slate-800/50">' + g.label + '</div>';
+        g.items.forEach(function(r) {
+            var busqueda = (r.codigo + ' ' + r.nombre + ' ' + g.label).toLowerCase();
+            html += '<button type="button" onclick="seleccionarItem(this)" data-id="' + r.id + '" data-texto="[' + r.codigo + '] ' + r.nombre.replace(/"/g, '&quot;') + '" data-busqueda="' + busqueda.replace(/"/g, '&quot;') + '" class="w-full text-left px-3 py-2 text-sm hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors">';
+            html += '<span class="font-mono text-[#CC0000] dark:text-red-400">' + r.codigo + '</span> ';
+            html += '<span class="text-[#0F172A] dark:text-white">' + r.nombre + '</span>';
+            html += '</button>';
+        });
+        html += '</div>';
+    });
+    container.innerHTML = html;
+}
+function seleccionarItem(btn) {
+    var cont = btn.closest('.custom-select');
+    cont.querySelector('input[name="repuesto_id"]').value = btn.getAttribute('data-id');
+    var span = cont.querySelector('button span');
+    span.textContent = btn.getAttribute('data-texto');
+    span.classList.remove('text-[#64748B]', 'dark:text-slate-400');
+    span.classList.add('text-[#0F172A]', 'dark:text-white');
+    cerrarTodosSelects();
+}
+function buscarEnSelect(input) {
+    var q = input.value.toLowerCase().trim();
+    var panel = input.closest('.select-panel');
+    var groups = panel.querySelectorAll('.select-group');
+    groups.forEach(function(g) {
+        var items = g.querySelectorAll('button');
+        var algunVisible = false;
+        items.forEach(function(btn) {
+            var busqueda = (btn.getAttribute('data-busqueda') || '').toLowerCase();
+            var match = !q || busqueda.indexOf(q) !== -1;
+            btn.style.display = match ? '' : 'none';
+            if (match) algunVisible = true;
+        });
+        g.style.display = algunVisible ? '' : 'none';
+    });
+}
+document.addEventListener('DOMContentLoaded', function() {
+    abrirModeloDesdeHash();
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.custom-select')) cerrarTodosSelects();
+    });
+});
 </script>
 {% endblock %}
