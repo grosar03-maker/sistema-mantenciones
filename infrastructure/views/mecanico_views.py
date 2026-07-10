@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
+from django.urls import reverse
 from django.views.decorators.http import require_http_methods
 
 from application.use_cases.asignar_mecanico import AsignarMecanico
@@ -517,6 +518,7 @@ def listar_catalogos(request):
 def crear_catalogo(request):
     modelo_id = request.POST.get("modelo_id", "").strip()
     tipo_mantencion = request.POST.get("tipo_mantencion", "").strip()
+    hash_ref = "#modelo-" + modelo_id if modelo_id else ""
     if not modelo_id or not tipo_mantencion:
         messages.error(request, "Debe seleccionar modelo y tipo de mantención")
         return redirect("listar_catalogos")
@@ -527,7 +529,7 @@ def crear_catalogo(request):
         messages.success(request, "Catálogo creado")
     else:
         messages.info(request, "El catálogo ya existe")
-    return redirect("listar_catalogos")
+    return redirect(reverse("listar_catalogos") + hash_ref)
 
 
 @login_required
@@ -535,9 +537,10 @@ def crear_catalogo(request):
 @require_http_methods(["POST"])
 def eliminar_catalogo(request, catalogo_id):
     catalogo = get_object_or_404(CatalogoRepuestos, id=catalogo_id)
+    modelo_id = catalogo.modelo_id
     catalogo.delete()
     messages.success(request, "Catálogo eliminado")
-    return redirect("listar_catalogos")
+    return redirect(reverse("listar_catalogos") + "#modelo-" + str(modelo_id))
 
 
 @login_required
@@ -547,9 +550,10 @@ def agregar_item_catalogo(request, catalogo_id):
     catalogo = get_object_or_404(CatalogoRepuestos, id=catalogo_id)
     repuesto_id = request.POST.get("repuesto_id", "").strip()
     cantidad = request.POST.get("cantidad", "1").strip()
+    hash_ref = "#modelo-" + str(catalogo.modelo_id)
     if not repuesto_id:
         messages.error(request, "Debe seleccionar un repuesto")
-        return redirect("listar_catalogos")
+        return redirect(reverse("listar_catalogos") + hash_ref)
     try:
         cantidad = int(cantidad)
         if cantidad < 1:
@@ -558,10 +562,10 @@ def agregar_item_catalogo(request, catalogo_id):
         cantidad = 1
     if ItemCatalogo.objects.filter(catalogo=catalogo, repuesto_id=repuesto_id).exists():
         messages.warning(request, "Ese repuesto ya está en el catálogo")
-        return redirect("listar_catalogos")
+        return redirect(reverse("listar_catalogos") + hash_ref)
     ItemCatalogo.objects.create(catalogo=catalogo, repuesto_id=repuesto_id, cantidad=cantidad)
     messages.success(request, "Repuesto agregado al catálogo")
-    return redirect("listar_catalogos")
+    return redirect(reverse("listar_catalogos") + hash_ref)
 
 
 @login_required
@@ -579,7 +583,7 @@ def editar_item_catalogo(request, item_id):
     item.cantidad = cantidad
     item.save()
     messages.success(request, "Cantidad actualizada")
-    return redirect("listar_catalogos")
+    return redirect(reverse("listar_catalogos") + "#modelo-" + str(item.catalogo.modelo_id))
 
 
 @login_required
@@ -587,9 +591,10 @@ def editar_item_catalogo(request, item_id):
 @require_http_methods(["POST"])
 def eliminar_item_catalogo(request, item_id):
     item = get_object_or_404(ItemCatalogo, id=item_id)
+    modelo_id = item.catalogo.modelo_id
     item.delete()
     messages.success(request, "Repuesto eliminado del catálogo")
-    return redirect("listar_catalogos")
+    return redirect(reverse("listar_catalogos") + "#modelo-" + str(modelo_id))
 
 
 @login_required

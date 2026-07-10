@@ -218,7 +218,7 @@
                         <div class="{% if not forloop.last %}border-b border-slate-50 dark:border-slate-700/50{% endif %}">
                             <div class="flex items-center px-6 py-4">
                                 <button type="button"
-                                    onclick="toggleModelo('modelo-{{ tipo_val }}-{{ forloop.parentloop.counter0 }}-{{ forloop.counter0 }}-{{ forloop.counter0 }}', this)"
+                                    onclick="toggleModelo('modelo-{{ modelo.id }}', this)"
                                     class="flex items-center justify-between flex-1 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-200 text-left">
                                     <div class="flex items-center gap-4">
                                         <div class="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-700 flex items-center justify-center shrink-0">
@@ -241,7 +241,7 @@
                                 </button>
                             </div>
 
-                            <div id="modelo-{{ tipo_val }}-{{ forloop.parentloop.counter0 }}-{{ forloop.counter0 }}-{{ forloop.counter0 }}" class="hidden border-t border-slate-100 dark:border-slate-700">
+                            <div id="modelo-{{ modelo.id }}" class="hidden border-t border-slate-100 dark:border-slate-700">
                                 {% if total_cat %}
                                 {% for catalogo in modelo.catalogos.all %}
                                 <div class="{% if not forloop.last %}border-b border-slate-50 dark:border-slate-700/50{% endif %}">
@@ -366,25 +366,35 @@
 function toggleMarca(id, btn) {
     const div = document.getElementById(id);
     const icon = btn.querySelector('svg:last-child');
-    if (div.classList.contains('hidden')) {
-        div.classList.remove('hidden');
-        icon.classList.add('rotate-180');
-    } else {
-        div.classList.add('hidden');
-        icon.classList.remove('rotate-180');
-    }
+    div.classList.toggle('hidden');
+    icon.classList.toggle('rotate-180');
 }
 function toggleModelo(id, btn) {
     const div = document.getElementById(id);
     const icon = btn.querySelector('svg:last-child');
-    if (div.classList.contains('hidden')) {
-        div.classList.remove('hidden');
-        icon.classList.add('rotate-180');
-    } else {
-        div.classList.add('hidden');
-        icon.classList.remove('rotate-180');
-    }
+    div.classList.toggle('hidden');
+    icon.classList.toggle('rotate-180');
 }
-
+function abrirModeloDesdeHash() {
+    if (!window.location.hash || !window.location.hash.startsWith('#modelo-')) return;
+    const modeloBody = document.getElementById(window.location.hash.substring(1));
+    if (!modeloBody) return;
+    const marcaBody = modeloBody.closest('[id^="marca-"]');
+    [marcaBody, modeloBody].forEach(function(el) {
+        if (el && el.classList.contains('hidden')) {
+            el.classList.remove('hidden');
+            var header = el.previousElementSibling;
+            if (header) {
+                var btn = header.querySelector('button');
+                if (btn) {
+                    var icon = btn.querySelector('svg:last-child');
+                    if (icon) icon.classList.add('rotate-180');
+                }
+            }
+        }
+    });
+    setTimeout(function() { modeloBody.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 150);
+}
+document.addEventListener('DOMContentLoaded', abrirModeloDesdeHash);
 </script>
 {% endblock %}
