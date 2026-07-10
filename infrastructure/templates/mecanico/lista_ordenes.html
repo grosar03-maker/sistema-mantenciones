@@ -105,6 +105,11 @@
 
             <div class="mb-6 flex flex-wrap gap-3 items-end">
                 <div>
+                    <label class="block text-xs font-medium text-[#64748B] dark:text-slate-400 mb-1">ID Órdenes</label>
+                    <input type="text" id="filtro-id"
+                           class="filtro-input px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none">
+                </div>
+                <div>
                     <label class="block text-xs font-medium text-[#64748B] dark:text-slate-400 mb-1">N° Serie</label>
                     <input type="text" id="filtro-serie"
                            class="filtro-input px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none">
@@ -162,7 +167,7 @@
                         </thead>
                         <tbody class="divide-y divide-slate-50 dark:divide-slate-700">
                             {% for orden in ordenes %}
-                            <tr data-estado="{{ orden.estado }}" data-cliente="{{ orden.cliente.nombre|lower }}" data-serie="{% firstof orden.numero_serie_cliente|lower orden.tractor.numero_serie|lower '' %}" data-fecha="{{ orden.fecha_solicitud|date:'Y-m-d' }}" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-150">
+                            <tr data-id="{{ orden.id }}" data-estado="{{ orden.estado }}" data-cliente="{{ orden.cliente.nombre|lower }}" data-serie="{% firstof orden.numero_serie_cliente|lower orden.tractor.numero_serie|lower '' %}" data-fecha="{{ orden.fecha_solicitud|date:'Y-m-d' }}" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-150">
                                 <td class="px-6 py-4">
                                     <span class="font-mono text-sm text-[#64748B] dark:text-slate-400">{{ orden.id|stringformat:".8s" }}</span>
                                 </td>
@@ -250,6 +255,7 @@
     }
 
     function aplicarFiltros() {
+        var qId = document.getElementById('filtro-id').value.toLowerCase().trim();
         var qSerie = document.getElementById('filtro-serie').value.toLowerCase().trim();
         var qCliente = document.getElementById('filtro-cliente').value.toLowerCase().trim();
         var qDesde = document.getElementById('filtro-desde').value;
@@ -261,6 +267,7 @@
             var ok = true;
             if (ok && valsCategoria.indexOf(r.getAttribute('data-estado')) === -1) ok = false;
             if (ok && qEstado && r.getAttribute('data-estado') !== qEstado) ok = false;
+            if (ok && qId && r.getAttribute('data-id').toLowerCase().indexOf(qId) === -1) ok = false;
             if (ok && qSerie && r.getAttribute('data-serie').toLowerCase().indexOf(qSerie) === -1) ok = false;
             if (ok && qCliente && r.getAttribute('data-cliente').toLowerCase().indexOf(qCliente) === -1) ok = false;
             if (ok && qDesde && r.getAttribute('data-fecha') < qDesde) ok = false;
