@@ -431,10 +431,16 @@ def eliminar_modelo(request, modelo_id):
 @login_required
 @_mecanico_required
 def listar_repuestos(request):
-    repuestos = Repuesto.objects.all()
+    repuestos = Repuesto.objects.all().order_by("tipo", "nombre")
     mecanico = Mecanico.objects.filter(email=request.user.email).first()
+    grupos = []
+    for val, label in Repuesto.TIPOS_REPUESTO:
+        items = [r for r in repuestos if r.tipo == val]
+        if items:
+            grupos.append({"tipo_val": val, "tipo_label": label, "items": items})
     return render(request, "mecanico/gestionar_repuestos.html", {
         "repuestos": repuestos,
+        "grupos": grupos,
         "mecanico": mecanico,
         "tipos_repuesto": Repuesto.TIPOS_REPUESTO,
     })

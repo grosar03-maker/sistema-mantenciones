@@ -115,7 +115,7 @@
             <div class="flex items-center justify-between mb-8">
                 <div>
                     <h1 class="text-2xl font-bold text-[#0F172A] dark:text-white">Repuestos y Lubricantes</h1>
-                    <p class="text-[#64748B] dark:text-slate-400 mt-1">Gestiona filtros, aceites y códigos CNH</p>
+                    <p class="text-[#64748B] dark:text-slate-400 mt-1">Gestiona filtros, aceites y códigos de descripción</p>
                 </div>
             </div>
 
@@ -154,56 +154,117 @@
                 </form>
             </div>
 
-            <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full">
-                        <thead>
-                            <tr class="border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
-                                <th class="text-left px-6 py-4 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase tracking-wider">Código de descripción</th>
-                                <th class="text-left px-6 py-4 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase tracking-wider">Nombre</th>
-                                <th class="text-left px-6 py-4 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase tracking-wider">Tipo</th>
-                                <th class="text-right px-6 py-4 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase tracking-wider">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
-                            {% for repuesto in repuestos %}
-                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-150">
-                                <td class="px-6 py-4 text-sm font-mono font-medium text-[#CC0000] dark:text-red-400">{{ repuesto.codigo }}</td>
-                                <td class="px-6 py-4 text-sm text-[#0F172A] dark:text-white">{{ repuesto.nombre }}</td>
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
-                                        {% if 'filtro' in repuesto.tipo %}bg-indigo-50 text-indigo-700
-                                        {% elif 'lubricante' in repuesto.tipo %}bg-amber-50 text-amber-700
-                                        {% else %}bg-slate-50 text-slate-600{% endif %}">
-                                        {{ repuesto.get_tipo_display }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-right">
-                                    <div class="flex items-center justify-end gap-2">
-                                        <button type="button" onclick="editarRepuesto('{{ repuesto.id }}', '{{ repuesto.codigo|escapejs }}', '{{ repuesto.nombre|escapejs }}', '{{ repuesto.tipo }}')"
-                                                class="px-3 py-2 text-xs font-medium text-[#64748B] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors duration-200">
-                                            Editar
-                                        </button>
-                                        <form method="POST" action="{% url 'eliminar_repuesto' repuesto.id %}" onsubmit="return confirm('¿Eliminar {{ repuesto.codigo }} {{ repuesto.nombre }}?')">
-                                            {% csrf_token %}
-                                            <button type="submit"
-                                                    class="px-3 py-2 text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors duration-200">
-                                                Eliminar
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4" class="px-6 py-12 text-center text-[#64748B] dark:text-slate-400">
-                                    No hay repuestos registrados. Crea el primero arriba.
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+            <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between mb-6">
+                <div class="flex-1 w-full sm:w-auto">
+                    <div class="relative">
+                        <svg class="w-5 h-5 text-[#64748B] dark:text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input type="text" id="searchInput" oninput="filtrarRepuestos()"
+                            placeholder="Buscar por nombre, código o tipo..."
+                            class="w-full pl-12 pr-4 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none transition-all duration-200">
+                    </div>
                 </div>
+                <div class="flex gap-2">
+                    <button type="button" onclick="ordenarRepuestos('nombre')"
+                        class="px-4 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-xl text-sm font-medium text-[#64748B] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all duration-200 flex items-center gap-2" id="sortBtn">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                        </svg>
+                        <span id="sortLabel">A-Z</span>
+                        <svg class="w-4 h-4 text-[#64748B]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div id="listaRepuestos">
+                {% for grupo in grupos %}
+                <div class="mb-8 grupo-tipo" data-tipo="{{ grupo.tipo_val }}">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center
+                            {% if 'filtro' in grupo.tipo_val %}bg-indigo-50 text-indigo-600
+                            {% elif 'lubricante' in grupo.tipo_val %}bg-amber-50 text-amber-600
+                            {% elif grupo.tipo_val == 'motor' %}bg-red-50 text-red-600
+                            {% elif grupo.tipo_val == 'transmision' %}bg-blue-50 text-blue-600
+                            {% elif grupo.tipo_val == 'cabina' %}bg-emerald-50 text-emerald-600
+                            {% elif grupo.tipo_val == 'accesorios' %}bg-purple-50 text-purple-600
+                            {% else %}bg-slate-50 text-slate-600{% endif %}">
+                            {% if 'filtro' in grupo.tipo_val %}
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                            </svg>
+                            {% elif 'lubricante' in grupo.tipo_val %}
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                            </svg>
+                            {% elif grupo.tipo_val == 'motor' %}
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5" />
+                            </svg>
+                            {% else %}
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                            {% endif %}
+                        </div>
+                        <h2 class="text-xl font-bold text-[#0F172A] dark:text-white">{{ grupo.tipo_label }}</h2>
+                        <span class="text-xs text-[#64748B] dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-3 py-1 rounded-full contador-tipo">{{ grupo.items|length }}</span>
+                    </div>
+
+                    <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr class="border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+                                        <th class="text-left px-6 py-4 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase tracking-wider">Código de descripción</th>
+                                        <th class="text-left px-6 py-4 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase tracking-wider">Nombre</th>
+                                        <th class="text-right px-6 py-4 text-xs font-semibold text-[#64748B] dark:text-slate-400 uppercase tracking-wider">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
+                                    {% for repuesto in grupo.items %}
+                                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-150 item-repuesto"
+                                        data-nombre="{{ repuesto.nombre|lower }}"
+                                        data-codigo="{{ repuesto.codigo|lower }}"
+                                        data-tipo="{{ repuesto.tipo }}"
+                                        data-tipo-label="{{ repuesto.get_tipo_display|lower }}">
+                                        <td class="px-6 py-4 text-sm font-mono font-medium text-[#CC0000] dark:text-red-400">{{ repuesto.codigo }}</td>
+                                        <td class="px-6 py-4 text-sm text-[#0F172A] dark:text-white">{{ repuesto.nombre }}</td>
+                                        <td class="px-6 py-4 text-right">
+                                            <div class="flex items-center justify-end gap-2">
+                                                <button type="button" onclick="editarRepuesto('{{ repuesto.id }}', '{{ repuesto.codigo|escapejs }}', '{{ repuesto.nombre|escapejs }}', '{{ repuesto.tipo }}')"
+                                                        class="px-3 py-2 text-xs font-medium text-[#64748B] dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors duration-200">
+                                                    Editar
+                                                </button>
+                                                <form method="POST" action="{% url 'eliminar_repuesto' repuesto.id %}" onsubmit="return confirm('¿Eliminar {{ repuesto.codigo }} {{ repuesto.nombre }}?')">
+                                                    {% csrf_token %}
+                                                    <button type="submit"
+                                                            class="px-3 py-2 text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors duration-200">
+                                                        Eliminar
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-12 text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-50 dark:bg-slate-700 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-slate-300 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                    </div>
+                    <p class="text-[#64748B] dark:text-slate-300 font-medium">No hay repuestos registrados</p>
+                    <p class="text-sm text-slate-400 dark:text-slate-500 mt-1">Crea un repuesto usando el formulario de arriba</p>
+                </div>
+                {% endfor %}
             </div>
         </div>
     </main>
@@ -250,6 +311,8 @@
 </div>
 
 <script>
+var sortAsc = true;
+
 function editarRepuesto(id, codigo, nombre, tipo) {
     document.getElementById('formEditar').action = '/mecanico/repuestos/' + id + '/editar/';
     document.getElementById('editCodigo').value = codigo;
@@ -259,6 +322,47 @@ function editarRepuesto(id, codigo, nombre, tipo) {
 }
 function cerrarModal() {
     document.getElementById('modalEditar').classList.add('hidden');
+}
+function filtrarRepuestos() {
+    var q = document.getElementById('searchInput').value.toLowerCase().trim();
+    var grupos = document.querySelectorAll('.grupo-tipo');
+    grupos.forEach(function(grupo) {
+        var items = grupo.querySelectorAll('.item-repuesto');
+        var algunVisible = false;
+        items.forEach(function(row) {
+            var nombre = row.getAttribute('data-nombre') || '';
+            var codigo = row.getAttribute('data-codigo') || '';
+            var tipo = row.getAttribute('data-tipo-label') || '';
+            var match = !q || nombre.indexOf(q) !== -1 || codigo.indexOf(q) !== -1 || tipo.indexOf(q) !== -1;
+            row.style.display = match ? '' : 'none';
+            if (match) algunVisible = true;
+        });
+        grupo.style.display = algunVisible ? '' : 'none';
+        var contador = grupo.querySelector('.contador-tipo');
+        if (contador) {
+            var visibles = grupo.querySelectorAll('.item-repuesto[style*="display: none"]');
+            var total = items.length;
+            var visiblesCount = total - visibles.length;
+            contador.textContent = visiblesCount + '/' + total;
+        }
+    });
+}
+function ordenarRepuestos(campo) {
+    sortAsc = !sortAsc;
+    var label = document.getElementById('sortLabel');
+    label.textContent = sortAsc ? 'A-Z' : 'Z-A';
+    var grupos = document.querySelectorAll('.grupo-tipo');
+    grupos.forEach(function(grupo) {
+        var tbody = grupo.querySelector('tbody');
+        if (!tbody) return;
+        var rows = Array.from(tbody.querySelectorAll('.item-repuesto'));
+        rows.sort(function(a, b) {
+            var va = (a.getAttribute('data-' + campo) || '').toLowerCase();
+            var vb = (b.getAttribute('data-' + campo) || '').toLowerCase();
+            return sortAsc ? va.localeCompare(vb) : vb.localeCompare(va);
+        });
+        rows.forEach(function(row) { tbody.appendChild(row); });
+    });
 }
 </script>
 {% endblock %}
