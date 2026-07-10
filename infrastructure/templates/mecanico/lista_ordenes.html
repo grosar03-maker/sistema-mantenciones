@@ -142,6 +142,13 @@
                 </a>
             </form>
 
+            <div class="mb-4 flex items-center gap-2 text-sm">
+                <span class="text-[#64748B] dark:text-slate-400 font-medium mr-1">Mostrar:</span>
+                <button type="button" data-filter="activas" class="filter-btn px-4 py-1.5 rounded-full font-medium transition-colors bg-[#CC0000] text-white">Activas</button>
+                <button type="button" data-filter="finalizadas" class="filter-btn px-4 py-1.5 rounded-full font-medium transition-colors text-[#64748B] dark:text-slate-400 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600">Completadas / Canceladas</button>
+                <button type="button" data-filter="todas" class="filter-btn px-4 py-1.5 rounded-full font-medium transition-colors text-[#64748B] dark:text-slate-400 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600">Todas</button>
+            </div>
+
             <div class="bg-white dark:bg-slate-800 rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-slate-100 dark:divide-slate-700">
@@ -158,7 +165,7 @@
                         </thead>
                         <tbody class="divide-y divide-slate-50 dark:divide-slate-700">
                             {% for orden in ordenes %}
-                            <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-150">
+                            <tr data-estado="{{ orden.estado }}" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-150">
                                 <td class="px-6 py-4">
                                     <span class="font-mono text-sm text-[#64748B] dark:text-slate-400">{{ orden.id|stringformat:".8s" }}</span>
                                 </td>
@@ -207,5 +214,34 @@
             </div>
         </div>
     </main>
-</div>
+    </div>
+{% block extra_scripts %}
+<script>
+(function() {
+    var rows = document.querySelectorAll('[data-estado]');
+    var btns = document.querySelectorAll('.filter-btn');
+    var activos = ['pendiente', 'asignada', 'en_progreso'];
+    var finalizados = ['completada', 'cancelada'];
+    function filtrar(categoria) {
+        btns.forEach(function(b) {
+            var act = b.getAttribute('data-filter');
+            b.className = act === categoria
+                ? 'filter-btn px-4 py-1.5 rounded-full font-medium transition-colors bg-[#CC0000] text-white'
+                : 'filter-btn px-4 py-1.5 rounded-full font-medium transition-colors text-[#64748B] dark:text-slate-400 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600';
+        });
+        rows.forEach(function(r) {
+            var estado = r.getAttribute('data-estado');
+            r.style.display = categoria === 'activas'
+                ? (activos.indexOf(estado) !== -1 ? '' : 'none')
+                : categoria === 'finalizadas'
+                ? (finalizados.indexOf(estado) !== -1 ? '' : 'none')
+                : '';
+        });
+    }
+    btns.forEach(function(b) {
+        b.addEventListener('click', function() { filtrar(this.getAttribute('data-filter')); });
+    });
+})();
+</script>
+{% endblock %}
 {% endblock %}
