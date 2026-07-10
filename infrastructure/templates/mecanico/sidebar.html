@@ -9,12 +9,17 @@
 #sidebar.collapsed .sidebar-header .sidebar-text { display: none; }
 #sidebar.collapsed .user-section { justify-content: center; }
 #sidebar.collapsed .user-section .sidebar-text { display: none; }
-#sidebar.collapsed .toggle-label { display: none; }
 #sidebar.collapsed .cat-label { display: none; }
 #sidebar.collapsed .p-6 { padding: 1rem; }
 #sidebar.collapsed .nav-cat { padding: 0.5rem; }
 </style>
-<aside id="sidebar" class="w-64 bg-[#0F172A] min-h-screen flex flex-col shrink-0 transition-all duration-300">
+<aside id="sidebar" class="w-64 bg-[#0F172A] min-h-screen flex flex-col shrink-0 transition-all duration-300 relative">
+    <button id="toggleSidebar" onclick="toggleSidebar()"
+            class="absolute -right-3 top-6 w-6 h-6 rounded-full bg-[#0F172A] border border-slate-600 flex items-center justify-center text-slate-400 hover:text-white hover:border-slate-400 transition-all duration-200 z-10">
+        <svg id="chevronIcon" class="w-3.5 h-3.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"/>
+        </svg>
+    </button>
     <div class="p-6 border-b border-slate-700">
         <a href="{% url 'dashboard_mecanico' %}" class="flex items-center gap-3 sidebar-header">
             <div class="w-9 h-9 rounded-lg bg-[#CC0000] flex items-center justify-center shrink-0">
@@ -91,15 +96,6 @@
                 <p class="text-slate-400 text-xs">{{ mecanico.especialidad|default:"Técnico" }}</p>
             </div>
         </a>
-    </div>
-    <div class="px-4 pb-2">
-        <button id="toggleSidebar" onclick="toggleSidebar()"
-                class="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all duration-200">
-            <svg id="chevronIcon" class="w-5 h-5 shrink-0 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7"/>
-            </svg>
-            <span class="sidebar-text toggle-label text-sm">Colapsar</span>
-        </button>
     </div>
     <div class="px-4 pb-4">
         <a href="{% url 'logout' %}"
