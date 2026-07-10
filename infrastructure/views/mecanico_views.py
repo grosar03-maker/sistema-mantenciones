@@ -4,7 +4,7 @@ from datetime import date, datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.decorators.http import require_http_methods
@@ -328,9 +328,23 @@ def eliminar_nota_interna(request, nota_id):
 @_mecanico_required
 def lista_clientes(request):
     clientes = Cliente.objects.prefetch_related(
-        "tractores__modelo",
-        "tractores__ordenes__mecanico_asignado",
+        Prefetch(
+            "ordenes",
+            queryset=OrdenMantencion.objects.select_related(
+                "modelo", "mecanico_asignado"
+            ).order_by("-fecha_solicitud"),
+        ),
     ).all()
+
+    for c in clientes:
+        vistos = set()
+        equipos = []
+        for o in c.ordenes.all():
+            key = (o.modelo_id, o.numero_serie_cliente)
+            if key not in vistos:
+                vistos.add(key)
+                equipos.append(o)
+        c.equipos = equipos
 
     mecanico = Mecanico.objects.filter(email=request.user.email).first()
 
