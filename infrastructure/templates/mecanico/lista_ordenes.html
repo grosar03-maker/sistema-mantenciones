@@ -103,44 +103,41 @@
                 <p class="text-[#64748B] mt-1">Todas las órdenes registradas en el sistema</p>
             </div>
 
-            <form method="GET" action="{% url 'lista_ordenes' %}" class="mb-6 flex flex-wrap gap-3 items-end">
+            <div class="mb-6 flex flex-wrap gap-3 items-end">
                 <div>
                     <label class="block text-xs font-medium text-[#64748B] dark:text-slate-400 mb-1">N° Serie</label>
-                    <input type="text" name="numero_serie" value="{{ filtros.numero_serie }}"
-                           class="px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none">
+                    <input type="text" id="filtro-serie"
+                           class="filtro-input px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#64748B] dark:text-slate-400 mb-1">Cliente</label>
-                    <input type="text" name="cliente" value="{{ filtros.cliente }}"
-                           class="px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none">
+                    <input type="text" id="filtro-cliente"
+                           class="filtro-input px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#64748B] dark:text-slate-400 mb-1">Desde</label>
-                    <input type="date" name="fecha_desde" value="{{ filtros.fecha_desde }}"
-                           class="px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none">
+                    <input type="date" id="filtro-desde"
+                           class="filtro-input px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#64748B] dark:text-slate-400 mb-1">Hasta</label>
-                    <input type="date" name="fecha_hasta" value="{{ filtros.fecha_hasta }}"
-                           class="px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none">
+                    <input type="date" id="filtro-hasta"
+                           class="filtro-input px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none">
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#64748B] dark:text-slate-400 mb-1">Estado</label>
-                    <select name="estado"
+                    <select id="filtro-estado"
                             class="px-3 py-2 border border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none">
                         <option value="">Todos</option>
                         {% for val, label in estados %}
-                        <option value="{{ val }}" {% if filtros.estado == val %}selected{% endif %}>{{ label }}</option>
+                        <option value="{{ val }}">{{ label }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <button type="submit" class="px-4 py-2 bg-[#CC0000] text-white rounded-lg text-sm font-medium hover:bg-[#990000] transition-colors">
-                    Filtrar
-                </button>
-                <a href="{% url 'lista_ordenes' %}" class="px-4 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm text-[#64748B] dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
+                <button type="button" id="btn-limpiar-filtros" class="px-4 py-2 border border-slate-200 dark:border-slate-600 rounded-lg text-sm text-[#64748B] dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                     Limpiar
-                </a>
-            </form>
+                </button>
+            </div>
 
             <div class="mb-4 flex items-center gap-2 text-sm">
                 <span class="text-[#64748B] dark:text-slate-400 font-medium mr-1">Mostrar:</span>
@@ -165,7 +162,7 @@
                         </thead>
                         <tbody class="divide-y divide-slate-50 dark:divide-slate-700">
                             {% for orden in ordenes %}
-                            <tr data-estado="{{ orden.estado }}" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-150">
+                            <tr data-estado="{{ orden.estado }}" data-cliente="{{ orden.cliente.nombre|lower }}" data-serie="{% firstof orden.numero_serie_cliente|lower orden.tractor.numero_serie|lower '' %}" data-fecha="{{ orden.fecha_solicitud|date:'Y-m-d' }}" class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-150">
                                 <td class="px-6 py-4">
                                     <span class="font-mono text-sm text-[#64748B] dark:text-slate-400">{{ orden.id|stringformat:".8s" }}</span>
                                 </td>
@@ -218,30 +215,86 @@
 {% block extra_scripts %}
 <script>
 (function() {
-    var rows = document.querySelectorAll('[data-estado]');
-    var btns = document.querySelectorAll('.filter-btn');
+    var categoriaActual = 'activas';
     var activos = ['pendiente', 'asignada', 'en_progreso'];
     var finalizados = ['completada', 'cancelada'];
-    function filtrar(categoria) {
-        btns.forEach(function(b) {
+    var todosEstados = [
+        {val: 'pendiente', label: 'Pendiente'},
+        {val: 'asignada', label: 'Asignada'},
+        {val: 'en_progreso', label: 'En Progreso'},
+        {val: 'completada', label: 'Completada'},
+        {val: 'cancelada', label: 'Cancelada'}
+    ];
+    var mapaCategoria = {
+        'activas': ['pendiente', 'asignada', 'en_progreso'],
+        'finalizadas': ['completada', 'cancelada'],
+        'todas': ['pendiente', 'asignada', 'en_progreso', 'completada', 'cancelada']
+    };
+
+    function actualizarOpcionesEstado() {
+        var sel = document.getElementById('filtro-estado');
+        var valsPermitidos = mapaCategoria[categoriaActual];
+        var actual = sel.value;
+        sel.innerHTML = '<option value="">Todos</option>';
+        todosEstados.forEach(function(e) {
+            if (valsPermitidos.indexOf(e.val) !== -1) {
+                var opt = document.createElement('option');
+                opt.value = e.val;
+                opt.textContent = e.label;
+                sel.appendChild(opt);
+            }
+        });
+        if (valsPermitidos.indexOf(actual) !== -1) {
+            sel.value = actual;
+        }
+    }
+
+    function aplicarFiltros() {
+        var qSerie = document.getElementById('filtro-serie').value.toLowerCase().trim();
+        var qCliente = document.getElementById('filtro-cliente').value.toLowerCase().trim();
+        var qDesde = document.getElementById('filtro-desde').value;
+        var qHasta = document.getElementById('filtro-hasta').value;
+        var qEstado = document.getElementById('filtro-estado').value;
+        var valsCategoria = mapaCategoria[categoriaActual];
+        var rows = document.querySelectorAll('[data-estado]');
+        rows.forEach(function(r) {
+            var ok = true;
+            if (ok && valsCategoria.indexOf(r.getAttribute('data-estado')) === -1) ok = false;
+            if (ok && qEstado && r.getAttribute('data-estado') !== qEstado) ok = false;
+            if (ok && qSerie && r.getAttribute('data-serie').toLowerCase().indexOf(qSerie) === -1) ok = false;
+            if (ok && qCliente && r.getAttribute('data-cliente').toLowerCase().indexOf(qCliente) === -1) ok = false;
+            if (ok && qDesde && r.getAttribute('data-fecha') < qDesde) ok = false;
+            if (ok && qHasta && r.getAttribute('data-fecha') > qHasta) ok = false;
+            r.style.display = ok ? '' : 'none';
+        });
+    }
+
+    function cambiarCategoria(cat) {
+        categoriaActual = cat;
+        document.querySelectorAll('.filter-btn').forEach(function(b) {
             var act = b.getAttribute('data-filter');
-            b.className = act === categoria
+            b.className = act === cat
                 ? 'filter-btn px-4 py-1.5 rounded-full font-medium transition-colors bg-[#CC0000] text-white'
                 : 'filter-btn px-4 py-1.5 rounded-full font-medium transition-colors text-[#64748B] dark:text-slate-400 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600';
         });
-        rows.forEach(function(r) {
-            var estado = r.getAttribute('data-estado');
-            r.style.display = categoria === 'activas'
-                ? (activos.indexOf(estado) !== -1 ? '' : 'none')
-                : categoria === 'finalizadas'
-                ? (finalizados.indexOf(estado) !== -1 ? '' : 'none')
-                : '';
-        });
+        actualizarOpcionesEstado();
+        aplicarFiltros();
     }
-    btns.forEach(function(b) {
-        b.addEventListener('click', function() { filtrar(this.getAttribute('data-filter')); });
+
+    document.querySelectorAll('.filter-btn').forEach(function(b) {
+        b.addEventListener('click', function() { cambiarCategoria(this.getAttribute('data-filter')); });
     });
-    filtrar('activas');
+    document.querySelectorAll('.filtro-input').forEach(function(el) {
+        el.addEventListener('input', aplicarFiltros);
+        el.addEventListener('change', aplicarFiltros);
+    });
+    document.getElementById('filtro-estado').addEventListener('change', aplicarFiltros);
+    document.getElementById('btn-limpiar-filtros').addEventListener('click', function() {
+        document.querySelectorAll('.filtro-input').forEach(function(el) { el.value = ''; });
+        document.getElementById('filtro-estado').value = '';
+        aplicarFiltros();
+    });
+    cambiarCategoria('activas');
 })();
 </script>
 {% endblock %}
