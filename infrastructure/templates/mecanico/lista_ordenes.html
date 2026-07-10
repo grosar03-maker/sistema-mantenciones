@@ -241,6 +241,7 @@
     btns.forEach(function(b) {
         b.addEventListener('click', function() { filtrar(this.getAttribute('data-filter')); });
     });
+    filtrar('activas');
 })();
 </script>
 {% endblock %}
