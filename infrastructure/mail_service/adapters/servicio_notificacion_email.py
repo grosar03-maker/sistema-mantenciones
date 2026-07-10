@@ -113,7 +113,7 @@ class ServicioNotificacionEmail(ServicioNotificacion):
 
     def notificar_confirmacion_cliente(self, orden: OrdenMantencion) -> None:
         asunto = f"Confirmación de Orden de Mantención — {self._nombre_modelo(orden)}"
-        rows = self._detail_row("N° Orden", str(orden.id))
+        rows = self._detail_row("N° Orden", str(orden.id).split("-")[0])
         rows += self._detail_row("Equipo", self._nombre_modelo(orden))
         rows += self._detail_row("N° Serie", self._numero_serie(orden))
         rows += self._detail_row("Tipo de Mantención", self._tipo_display(orden))
