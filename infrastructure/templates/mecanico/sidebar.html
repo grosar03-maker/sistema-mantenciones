@@ -108,13 +108,29 @@
     </div>
 </aside>
 <script>
-function toggleSidebar() {
+(function() {
     var s = document.getElementById('sidebar');
     var c = document.getElementById('chevronIcon');
-    s.classList.toggle('collapsed');
-    c.style.transform = s.classList.contains('collapsed') ? 'rotate(180deg)' : '';
     var barra = document.getElementById('barraEliminar');
-    if (barra) barra.style.left = s.classList.contains('collapsed') ? '4rem' : '16rem';
-}
+    function colapsar(estado) {
+        if (estado) {
+            s.classList.add('collapsed');
+            c.style.transform = 'rotate(180deg)';
+            if (barra) barra.style.left = '4rem';
+        } else {
+            s.classList.remove('collapsed');
+            c.style.transform = '';
+            if (barra) barra.style.left = '16rem';
+        }
+        try { localStorage.setItem('sidebar_collapsed', estado ? '1' : ''); } catch(e) {}
+    }
+    function toggleSidebar() {
+        colapsar(!s.classList.contains('collapsed'));
+    }
+    window.toggleSidebar = toggleSidebar;
+    try {
+        if (localStorage.getItem('sidebar_collapsed') === '1') colapsar(true);
+    } catch(e) {}
+})();
 </script>
 {% endwith %}
