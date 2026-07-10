@@ -73,8 +73,7 @@ class ServicioNotificacionEmail(ServicioNotificacion):
 {body}
 </td></tr>
 <tr><td style="background-color:#F8FAFC;padding:20px 32px;border-top:1px solid #E2E8F0;text-align:center">
-<p style="margin:0 0 4px;font-size:13px;color:#64748B">© 2025 Case Mantenciones</p>
-<p style="margin:0;font-size:12px;color:#94A3B8">Sistema de Gestión de Mantenciones</p>
+<p style="margin:0;font-size:13px;color:#64748B">© 2025 Case Mantenciones</p>
 </td></tr>
 </table>
 <p style="margin:16px 0 0;font-size:11px;color:#94A3B8;text-align:center">Este es un correo automático, por favor no responda directamente.</p>
@@ -114,7 +113,8 @@ class ServicioNotificacionEmail(ServicioNotificacion):
 
     def notificar_confirmacion_cliente(self, orden: OrdenMantencion) -> None:
         asunto = f"Confirmación de Orden de Mantención — {self._nombre_modelo(orden)}"
-        rows = self._detail_row("Equipo", self._nombre_modelo(orden))
+        rows = self._detail_row("N° Orden", str(orden.id))
+        rows += self._detail_row("Equipo", self._nombre_modelo(orden))
         rows += self._detail_row("N° Serie", self._numero_serie(orden))
         rows += self._detail_row("Tipo de Mantención", self._tipo_display(orden))
         rows += self._detail_row("Estado", self._estado_display(orden))
