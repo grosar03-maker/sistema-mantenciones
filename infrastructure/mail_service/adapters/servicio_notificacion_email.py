@@ -163,7 +163,7 @@ class ServicioNotificacionEmail(ServicioNotificacion):
 <p style="margin:0 0 4px;font-size:14px;color:#64748B;line-height:1.5">Se le ha asignado una nueva orden de mantención.</p>
 {self._detail_table(rows)}
 {repuestos_html}
-{self._btn("https://opencloud.host/mecanico/ordenes/", "Ir al Portal Mecánico")}
+{self._btn("http://45.7.229.203/mecanico/ordenes/", "Ir al Portal Mecánico")}
 <p style="margin:0;font-size:14px;color:#0F172A;font-weight:600">Case Mantenciones</p>"""
         html = self._html_wrapper("Nueva Orden Asignada 🔧", body)
         send_mail(
@@ -213,7 +213,7 @@ class ServicioNotificacionEmail(ServicioNotificacion):
         body = f"""\
 <p style="margin:0 0 4px;font-size:14px;color:#64748B;line-height:1.5">Se ha registrado una nueva orden de mantención en el sistema.</p>
 {self._detail_table(rows)}
-{self._btn("https://opencloud.host/mecanico/ordenes/", "Ir al Portal Mecánico")}
+{self._btn("http://45.7.229.203/mecanico/ordenes/", "Ir al Portal Mecánico")}
 <p style="margin:0;font-size:14px;color:#0F172A;font-weight:600">Case Mantenciones</p>"""
         html = self._html_wrapper("Nueva Orden Registrada 🚜", body)
         send_mail(
