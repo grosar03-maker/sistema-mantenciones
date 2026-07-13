@@ -5,6 +5,19 @@
 
 {% block nav %}{% endblock %}
 
+{% block extra_head %}
+<style>
+.main-bg {
+    background: linear-gradient(135deg, rgba(248,250,252,0.92) 0%, rgba(255,255,255,0.88) 50%, rgba(241,245,249,0.92) 100%),
+                url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1920&q=80') center/cover fixed;
+}
+.dark .main-bg {
+    background: linear-gradient(135deg, rgba(15,23,42,0.92) 0%, rgba(30,41,59,0.88) 50%, rgba(15,23,42,0.92) 100%),
+                url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1920&q=80') center/cover fixed;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <div id="modalCancelar" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden" onclick="if(event.target===this)cerrarModal()">
     <div class="bg-white dark:bg-slate-800 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl" onclick="event.stopPropagation()">
@@ -68,7 +81,7 @@ function cerrarModalEliminar() {
 <div class="min-h-screen flex">
     {% include "mecanico/sidebar.html" %}
 
-    <main class="flex-1 overflow-auto">
+    <main class="flex-1 overflow-auto main-bg">
         <div class="sticky top-0 z-10 flex justify-end px-4 py-1">
             {% include "mecanico/topbar.html" %}
         </div>
