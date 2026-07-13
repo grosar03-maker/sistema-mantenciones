@@ -8,10 +8,10 @@
 #sidebar.collapsed .sidebar-header { justify-content: center; }
 #sidebar.collapsed .sidebar-header .sidebar-text { display: none; }
 #sidebar.collapsed .cat-label { display: none; }
-#sidebar.collapsed .p-6 { padding: 1rem; }
+#sidebar.collapsed .p-4 { padding: 0.5rem; }
 #sidebar.collapsed .nav-cat { padding: 0.5rem; }
 </style>
-<aside id="sidebar" class="w-64 bg-[#0F172A] min-h-screen flex flex-col shrink-0 transition-all duration-300 relative">
+<aside id="sidebar" class="w-56 xl:w-64 bg-[#0F172A] min-h-screen flex flex-col shrink-0 transition-all duration-300 relative">
     <button id="toggleSidebar" onclick="toggleSidebar()"
             class="absolute -right-3 top-6 w-6 h-6 rounded-full bg-[#0F172A] border border-slate-600 flex items-center justify-center text-slate-400 hover:text-white hover:border-slate-400 transition-all duration-200 z-10">
         <svg id="chevronIcon" class="w-3.5 h-3.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,6 +89,11 @@
 (function() {
     var s = document.getElementById('sidebar');
     var c = document.getElementById('chevronIcon');
+    function getWidth() { return s.classList.contains('collapsed') ? 64 : (window.innerWidth >= 1280 ? 256 : 224); }
+    function ajustarBarra() {
+        var barra = document.getElementById('barraEliminar');
+        if (barra) barra.style.left = getWidth() + 'px';
+    }
     function colapsar(estado) {
         if (estado) {
             s.classList.add('collapsed');
@@ -97,15 +102,19 @@
             s.classList.remove('collapsed');
             c.style.transform = '';
         }
+        ajustarBarra();
         try { localStorage.setItem('sidebar_collapsed', estado ? '1' : ''); } catch(e) {}
     }
     function toggleSidebar() {
         colapsar(!s.classList.contains('collapsed'));
     }
     window.toggleSidebar = toggleSidebar;
+    var obs = new ResizeObserver(ajustarBarra);
+    obs.observe(s);
     try {
         if (localStorage.getItem('sidebar_collapsed') === '1') colapsar(true);
     } catch(e) {}
+    window.addEventListener('resize', ajustarBarra);
 })();
 </script>
 {% endwith %}
