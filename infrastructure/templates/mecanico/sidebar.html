@@ -7,11 +7,9 @@
 #sidebar.collapsed .nav-link svg { margin: 0; }
 #sidebar.collapsed .sidebar-header { justify-content: center; }
 #sidebar.collapsed .sidebar-header .sidebar-text { display: none; }
-#sidebar.collapsed .user-section .sidebar-text { display: none; }
 #sidebar.collapsed .cat-label { display: none; }
 #sidebar.collapsed .p-6 { padding: 1rem; }
 #sidebar.collapsed .nav-cat { padding: 0.5rem; }
-#sidebar.collapsed .top-bar { justify-content: center; }
 </style>
 <aside id="sidebar" class="w-64 bg-[#0F172A] min-h-screen flex flex-col shrink-0 transition-all duration-300 relative">
     <button id="toggleSidebar" onclick="toggleSidebar()"
@@ -21,8 +19,8 @@
         </svg>
     </button>
 
-    <div class="p-4 border-b border-slate-700 top-bar flex items-center justify-between gap-2">
-        <a href="{% url 'dashboard_mecanico' %}" class="flex items-center gap-3 sidebar-header shrink-0">
+    <div class="p-4 border-b border-slate-700 top-bar">
+        <a href="{% url 'dashboard_mecanico' %}" class="flex items-center gap-3 sidebar-header">
             <div class="w-9 h-9 rounded-lg bg-[#CC0000] flex items-center justify-center shrink-0">
                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -34,24 +32,6 @@
                 <p class="text-slate-400 text-xs">Mantenciones</p>
             </div>
         </a>
-
-        <div class="flex items-center gap-1 sidebar-text">
-            <a href="{% url 'detalle_mecanico' %}" class="flex items-center gap-2 px-3 py-2 rounded-xl text-slate-300 hover:bg-slate-800 hover:text-white transition-all duration-200 group" title="Mi Cuenta">
-                <div class="w-7 h-7 rounded-full bg-slate-600 flex items-center justify-center text-white text-xs font-medium uppercase shrink-0 group-hover:bg-slate-500 transition-colors">
-                    {{ mecanico.nombre|make_list|first|default:user.username|make_list|first }}
-                </div>
-                <div class="leading-tight">
-                    <p class="text-white text-xs font-medium">{{ mecanico.nombre|default:user.get_full_name|default:user.username }}</p>
-                    <p class="text-slate-400 text-[10px]">{{ mecanico.especialidad|default:"Técnico" }}</p>
-                </div>
-            </a>
-            <a href="{% url 'logout' %}"
-               class="flex items-center justify-center w-9 h-9 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all duration-200" title="Cerrar Sesión">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-            </a>
-        </div>
     </div>
 
     <nav class="flex-1 p-4 space-y-1">
