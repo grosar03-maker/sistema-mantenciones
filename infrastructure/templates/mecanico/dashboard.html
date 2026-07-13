@@ -5,7 +5,16 @@
 
 {% block nav %}{% endblock %}
 
-{% block extra_head %}{% endblock %}
+{% block extra_head %}
+<style>
+.main-bg {
+    background: linear-gradient(135deg, rgba(248,250,252,0.92) 0%, rgba(255,255,255,0.88) 50%, rgba(241,245,249,0.92) 100%) center/cover fixed;
+}
+.dark .main-bg {
+    background: linear-gradient(135deg, rgba(15,23,42,0.92) 0%, rgba(30,41,59,0.88) 50%, rgba(15,23,42,0.92) 100%) center/cover fixed;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <div id="modalCancelar" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden" onclick="if(event.target===this)cerrarModal()">
@@ -45,6 +54,42 @@
                     {% csrf_token %}
                     <button type="submit" class="w-full px-5 py-3 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition-all duration-200">Sí, Eliminar</button>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalConfig" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden" onclick="if(event.target===this)cerrarConfig()">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-lg w-full mx-4 shadow-2xl" onclick="event.stopPropagation()">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-700 flex items-center justify-center">
+                <svg class="w-5 h-5 text-[#64748B] dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-[#0F172A] dark:text-white">Configuración</h3>
+                <p class="text-sm text-[#64748B] dark:text-slate-400">Personaliza el fondo del panel</p>
+            </div>
+        </div>
+        <div class="space-y-4">
+            <div>
+                <label class="block text-sm font-medium text-[#0F172A] dark:text-white mb-1.5">URL de imagen de fondo</label>
+                <input type="url" id="input-bg-url"
+                    class="w-full px-4 py-2.5 border-2 border-slate-200 dark:border-slate-600 rounded-xl focus:border-[#CC0000] focus:ring-4 focus:ring-red-50 outline-none transition-all duration-200 bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white placeholder-slate-400 dark:placeholder-slate-500 text-sm"
+                    placeholder="https://ejemplo.com/imagen.jpg">
+                <p class="text-xs text-[#64748B] dark:text-slate-400 mt-1.5">Ingresa la URL de una imagen para usarla como fondo del panel principal</p>
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button type="button" onclick="restaurarBg()"
+                    class="px-5 py-2.5 border-2 border-slate-200 dark:border-slate-600 rounded-xl font-medium text-[#64748B] dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200 text-sm">
+                    Restaurar default
+                </button>
+                <button type="button" onclick="guardarConfig()"
+                    class="flex-1 px-5 py-2.5 bg-[#CC0000] text-white rounded-xl font-semibold hover:bg-[#990000] transition-all duration-200 shadow-lg shadow-red-200 text-sm">
+                    Guardar
+                </button>
             </div>
         </div>
     </div>
@@ -398,4 +443,56 @@ function cerrarModalEliminar() {
         </div>
     </main>
 </div>
+
+<script>
+var BG_DEFAULT = 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=1920&q=80';
+
+function aplicarBg(url) {
+    var main = document.getElementById('main-content');
+    if (!main) return;
+    var isDark = document.documentElement.classList.contains('dark');
+    var overlay = isDark
+        ? 'linear-gradient(135deg, rgba(15,23,42,0.92) 0%, rgba(30,41,59,0.88) 50%, rgba(15,23,42,0.92) 100%)'
+        : 'linear-gradient(135deg, rgba(248,250,252,0.92) 0%, rgba(255,255,255,0.88) 50%, rgba(241,245,249,0.92) 100%)';
+    main.style.background = overlay + ', url(' + url + ') center/cover fixed';
+    try { localStorage.setItem('bg_url', url); } catch(e) {}
+}
+
+function abrirConfig() {
+    var modal = document.getElementById('modalConfig');
+    if (!modal) return;
+    var input = document.getElementById('input-bg-url');
+    try { input.value = localStorage.getItem('bg_url') || BG_DEFAULT; } catch(e) { input.value = BG_DEFAULT; }
+    modal.classList.remove('hidden');
+}
+
+function cerrarConfig() {
+    document.getElementById('modalConfig').classList.add('hidden');
+}
+
+function guardarConfig() {
+    var url = document.getElementById('input-bg-url').value.trim();
+    if (!url) { alert('Ingresa una URL v&aacute;lida'); return; }
+    aplicarBg(url);
+    cerrarConfig();
+}
+
+function restaurarBg() {
+    aplicarBg(BG_DEFAULT);
+    cerrarConfig();
+}
+
+(function() {
+    try {
+        var saved = localStorage.getItem('bg_url');
+        if (saved) aplicarBg(saved);
+    } catch(e) {}
+    var obs = new MutationObserver(function() {
+        var saved = (function(){ try { return localStorage.getItem('bg_url'); } catch(e) { return null; } })();
+        if (saved) aplicarBg(saved);
+        else aplicarBg(BG_DEFAULT);
+    });
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+})();
+</script>
 {% endblock %}
