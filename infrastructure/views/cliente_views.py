@@ -206,6 +206,35 @@ def dias_disponibles_api(request):
 
 
 @login_required
+def tipos_por_modelo_api(request):
+    modelo_id = request.GET.get("modelo_id")
+    if not modelo_id:
+        return JsonResponse({"error": "Falta parámetro modelo_id"}, status=400)
+
+    from infrastructure.models import CatalogoRepuestos, TipoMantencion as TipoMantencionModel
+
+    tipos = TipoMantencionModel.objects.filter(activa=True).order_by("horas")
+
+    if modelo_id:
+        codigos_con_catalogo = set(
+            CatalogoRepuestos.objects.filter(modelo_id=modelo_id)
+            .values_list("tipo_mantencion", flat=True)
+        )
+        tipos_disponibles = [
+            {"codigo": t.codigo, "nombre": t.nombre, "horas": t.horas}
+            for t in tipos
+            if t.codigo in codigos_con_catalogo
+        ]
+    else:
+        tipos_disponibles = [
+            {"codigo": t.codigo, "nombre": t.nombre, "horas": t.horas}
+            for t in tipos
+        ]
+
+    return JsonResponse({"tipos": tipos_disponibles})
+
+
+@login_required
 def dashboard_cliente(request):
     try:
         cliente_obj = Cliente.objects.get(email=request.user.email)
