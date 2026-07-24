@@ -89,10 +89,14 @@
             {% if tipo_grupos %}
             <div class="mb-8">
                 <div class="flex items-center gap-3 mb-4">
-                    <div class="w-10 h-10 rounded-xl {% if tipo_val == 'tractor' %}bg-blue-50 text-blue-600{% else %}bg-emerald-50 text-emerald-600{% endif %} flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-xl {% if tipo_val == 'tractor' %}bg-blue-50 text-blue-600{% elif tipo_val == 'cosechadora' %}bg-amber-50 text-amber-600{% else %}bg-emerald-50 text-emerald-600{% endif %} flex items-center justify-center">
                         {% if tipo_val == 'tractor' %}
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                        </svg>
+                        {% elif tipo_val == 'cosechadora' %}
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999A5.002 5.002 0 0012 4a5 5 0 00-4.546 2.914A4 4 0 003 15z" />
                         </svg>
                         {% else %}
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -100,7 +104,7 @@
                         </svg>
                         {% endif %}
                     </div>
-                    <h2 class="text-xl font-bold text-[#0F172A] dark:text-white">{% if tipo_val == 'tractor' %}Tractores{% else %}Implementos{% endif %}</h2>
+                    <h2 class="text-xl font-bold text-[#0F172A] dark:text-white">{% if tipo_val == 'tractor' %}Tractores{% elif tipo_val == 'cosechadora' %}Cosechadoras{% else %}Implementos{% endif %}</h2>
                 </div>
 
                 {% for marca, marca_modelos in tipo_grupos.items %}

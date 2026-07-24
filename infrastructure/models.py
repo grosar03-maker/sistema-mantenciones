@@ -80,6 +80,7 @@ class ModeloTractor(models.Model):
     TIPOS = [
         ("tractor", "Tractor"),
         ("implemento", "Implemento"),
+        ("cosechadora", "Cosechadora"),
     ]
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     nombre = models.CharField(max_length=200)
