@@ -15,7 +15,7 @@ from application.use_cases.iniciar_mantencion import IniciarMantencion
 from application.use_cases.completar_mantencion import CompletarMantencion
 from domain.value_objects.estado_orden import EstadoOrden
 from infrastructure.mail_service.adapters.servicio_notificacion_email import ServicioNotificacionEmail
-from infrastructure.models import Cliente, Mecanico, ModeloTractor, Repuesto, CatalogoRepuestos, ItemCatalogo, OrdenMantencion
+from infrastructure.models import Cliente, Mecanico, ModeloTractor, Repuesto, CatalogoRepuestos, ItemCatalogo, OrdenMantencion, Marca, TipoMantencion
 from infrastructure.persistence.adapters.repositorio_mecanico_sql import RepositorioMecanicoSQL
 from infrastructure.persistence.adapters.repositorio_orden_mantencion_sql import RepositorioOrdenMantencionSQL
 
@@ -385,7 +385,7 @@ def eliminar_clientes_masivo(request):
 def listar_modelos(request):
     modelos = ModeloTractor.objects.all().order_by("tipo", "marca", "nombre")
     mecanico = Mecanico.objects.filter(email=request.user.email).first()
-    # Group by tipo then marca
+    marcas = Marca.objects.all()
     grupos = {}
     for m in modelos:
         grupos.setdefault(m.tipo, {}).setdefault(m.marca, []).append(m)
@@ -394,6 +394,7 @@ def listar_modelos(request):
         "grupos": grupos,
         "mecanico": mecanico,
         "tipos": ModeloTractor.TIPOS,
+        "marcas": marcas,
     })
 
 
@@ -522,12 +523,13 @@ def listar_catalogos(request):
     grupos = {}
     for m in modelos:
         grupos.setdefault(m.tipo, {}).setdefault(m.marca, []).append(m)
+    tipos_mantencion = list(TipoMantencion.objects.filter(activa=True).values_list("codigo", "nombre"))
     return render(request, "mecanico/gestionar_catalogos.html", {
         "modelos": modelos,
         "grupos": grupos,
         "repuestos": repuestos,
         "mecanico": mecanico,
-        "tipos_mantencion": CatalogoRepuestos.TIPOS_MANTENCION,
+        "tipos_mantencion": tipos_mantencion,
         "tipos": ModeloTractor.TIPOS,
         "tipos_repuesto": Repuesto.TIPOS_REPUESTO,
         "repuestos_json": json.dumps([{
@@ -654,3 +656,91 @@ def detalle_mecanico(request):
     return render(request, "mecanico/detalle_mecanico.html", {
         "mecanico": mecanico,
     })
+
+
+# ─── Marcas y Horas CRUD ────────────────────────────────────────
+
+@login_required
+@_mecanico_required
+def listar_marcas_horas(request):
+    mecanico = Mecanico.objects.filter(email=request.user.email).first()
+    marcas = Marca.objects.all()
+    tipos_mantencion = TipoMantencion.objects.all()
+    return render(request, "mecanico/gestionar_marcas_horas.html", {
+        "mecanico": mecanico,
+        "marcas": marcas,
+        "tipos_mantencion": tipos_mantencion,
+    })
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def crear_marca(request):
+    nombre = request.POST.get("nombre", "").strip()
+    if not nombre:
+        messages.error(request, "El nombre de la marca es obligatorio")
+        return redirect("listar_marcas_horas")
+    if Marca.objects.filter(nombre__iexact=nombre).exists():
+        messages.error(request, f"Ya existe la marca '{nombre}'")
+        return redirect("listar_marcas_horas")
+    Marca.objects.create(nombre=nombre)
+    messages.success(request, f"Marca '{nombre}' creada")
+    return redirect("listar_marcas_horas")
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def eliminar_marca(request, marca_id):
+    marca = get_object_or_404(Marca, id=marca_id)
+    nombre = marca.nombre
+    marca.delete()
+    messages.success(request, f"Marca '{nombre}' eliminada")
+    return redirect("listar_marcas_horas")
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def crear_tipo_mantencion(request):
+    horas_str = request.POST.get("horas", "").strip()
+    nombre = request.POST.get("nombre", "").strip()
+    if not horas_str or not nombre:
+        messages.error(request, "Las horas y el nombre son obligatorios")
+        return redirect("listar_marcas_horas")
+    try:
+        horas = int(horas_str)
+    except ValueError:
+        messages.error(request, "Las horas deben ser un número")
+        return redirect("listar_marcas_horas")
+    if TipoMantencion.objects.filter(horas=horas).exists():
+        messages.error(request, f"Ya existe un tipo de mantención con {horas} horas")
+        return redirect("listar_marcas_horas")
+    codigo = f"mant_{horas}h"
+    TipoMantencion.objects.create(horas=horas, nombre=nombre, codigo=codigo)
+    messages.success(request, f"Tipo de mantención '{nombre}' creado")
+    return redirect("listar_marcas_horas")
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def toggle_tipo_mantencion(request, tipo_id):
+    tipo = get_object_or_404(TipoMantencion, id=tipo_id)
+    tipo.activa = not tipo.activa
+    tipo.save()
+    estado = "activado" if tipo.activa else "desactivado"
+    messages.success(request, f"Tipo '{tipo.nombre}' {estado}")
+    return redirect("listar_marcas_horas")
+
+
+@login_required
+@_mecanico_required
+@require_http_methods(["POST"])
+def eliminar_tipo_mantencion(request, tipo_id):
+    tipo = get_object_or_404(TipoMantencion, id=tipo_id)
+    nombre = tipo.nombre
+    tipo.delete()
+    messages.success(request, f"Tipo de mantención '{nombre}' eliminado")
+    return redirect("listar_marcas_horas")

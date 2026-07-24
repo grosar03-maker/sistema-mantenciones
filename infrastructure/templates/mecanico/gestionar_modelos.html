@@ -53,8 +53,13 @@
                         </div>
                         <div class="flex-1">
                             <label class="block text-xs font-medium text-[#64748B] dark:text-slate-400 mb-1">Marca</label>
-                            <input type="text" name="marca" value="Case" required
-                                   class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none transition-all duration-200">
+                            <select name="marca" required
+                                    class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none transition-all duration-200">
+                                <option value="">Seleccionar marca...</option>
+                                {% for marca in marcas %}
+                                <option value="{{ marca.nombre }}">{{ marca.nombre }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                         <div class="flex-[2]">
                             <label class="block text-xs font-medium text-[#64748B] dark:text-slate-400 mb-1">Nombre del Modelo</label>
@@ -184,8 +189,13 @@
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#64748B] dark:text-slate-400 mb-1">Marca</label>
-                    <input type="text" name="marca" id="editMarca" required
-                           class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none">
+                    <select name="marca" id="editMarca" required
+                            class="w-full px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl bg-white dark:bg-slate-700 text-[#0F172A] dark:text-white text-sm focus:border-[#CC0000] outline-none">
+                        <option value="">Seleccionar marca...</option>
+                        {% for marca in marcas %}
+                        <option value="{{ marca.nombre }}">{{ marca.nombre }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-[#64748B] dark:text-slate-400 mb-1">Nombre del Modelo</label>

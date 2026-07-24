@@ -10,6 +10,39 @@ def imagen_upload_path(instance, filename):
     return f"ordenes/{instance.orden.id}/{uuid.uuid4()}.{ext}"
 
 
+class Marca(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    nombre = models.CharField(max_length=100, unique=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Marca"
+        verbose_name_plural = "Marcas"
+        db_table = "marcas"
+        ordering = ["nombre"]
+
+    def __str__(self):
+        return self.nombre
+
+
+class TipoMantencion(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    horas = models.PositiveIntegerField(unique=True)
+    nombre = models.CharField(max_length=100)
+    codigo = models.CharField(max_length=30, unique=True)
+    activa = models.BooleanField(default=True)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Tipo de Mantención"
+        verbose_name_plural = "Tipos de Mantención"
+        db_table = "tipos_mantencion"
+        ordering = ["horas"]
+
+    def __str__(self):
+        return self.nombre
+
+
 class Cliente(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     nombre = models.CharField(max_length=200)

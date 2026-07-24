@@ -19,6 +19,8 @@ from infrastructure.views.mecanico_views import (
     listar_catalogos, crear_catalogo, eliminar_catalogo,
     agregar_item_catalogo, editar_item_catalogo, eliminar_item_catalogo,
     detalle_mecanico,
+    listar_marcas_horas, crear_marca, eliminar_marca,
+    crear_tipo_mantencion, toggle_tipo_mantencion, eliminar_tipo_mantencion,
 )
 
 urlpatterns = [
@@ -69,6 +71,12 @@ urlpatterns = [
     path("mecanico/items/<uuid:item_id>/editar/", editar_item_catalogo, name="editar_item_catalogo"),
     path("mecanico/items/<uuid:item_id>/eliminar/", eliminar_item_catalogo, name="eliminar_item_catalogo"),
     path("mecanico/mi-cuenta/", detalle_mecanico, name="detalle_mecanico"),
+    path("mecanico/marcas-horas/", listar_marcas_horas, name="listar_marcas_horas"),
+    path("mecanico/marcas-horas/marca/crear/", crear_marca, name="crear_marca"),
+    path("mecanico/marcas-horas/marca/<uuid:marca_id>/eliminar/", eliminar_marca, name="eliminar_marca"),
+    path("mecanico/marcas-horas/tipo/crear/", crear_tipo_mantencion, name="crear_tipo_mantencion"),
+    path("mecanico/marcas-horas/tipo/<uuid:tipo_id>/toggle/", toggle_tipo_mantencion, name="toggle_tipo_mantencion"),
+    path("mecanico/marcas-horas/tipo/<uuid:tipo_id>/eliminar/", eliminar_tipo_mantencion, name="eliminar_tipo_mantencion"),
 ]
 
 if settings.DEBUG:
